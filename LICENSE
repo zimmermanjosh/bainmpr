@@ -1,0 +1,37 @@
+SOFTWARE LICENSE AGREEMENT
+Visit https://avispl.com/terms-of-use/
+
+This Software License is made by AVI-SPL Global LLC or its affiliate ("Seller") to Buyer as an essential element of the services to be rendered by the Seller as defined in the Proposal and any system specification and any associated documents made available to Buyer by Seller. Buyer and Seller agree that this Software License is deemed to be part of the Agreement. This Software License applies to control system integration and programming and does not apply to any other services. Any capitalized terms not otherwise defined herein shall have the meaning ascribed to them under the General Terms and Conditions.
+
+1. License Grant and Ownership
+1.1 Seller hereby grants to Buyer a worldwide, perpetual, non - exclusive, non - transferable license to all Software for its use in connection with the establishment, use, maintenance and modification of the control system implemented by Seller. The term “Software” for the purposes of this Software License shall refer to all source code, executable object code, and the patches, scripts, modifications, enhancements, designs, concepts or other materials that constitute the software programs necessary for the proper function and operation of the control system as delivered by Seller and accepted by Buyer.
+
+1.2 Except as expressly set forth in this paragraph, Seller shall at all times own all intellectual property rights to the Software. Any and all licenses, product warranties or service contracts provided by third parties in connection with the Software or control system in which such Software is implemented shall be delivered to Buyer for the sole benefit of Buyer.
+
+1.3 Buyer may supply to Seller or allow Seller to use certain proprietary information, including service marks, logos, graphics, software, documents and business information and plans that have been authored or pre-owned by Buyer. All such intellectual property shall remain the exclusive property of Buyer and shall not be used by Seller for any purposes other than those associated with delivery of the control system.
+
+2. Copies, Modification and Use
+2.1 Buyer may make copies of the Software solely for archival purposes and as required for modifications to the control system in which such Software is implemented. All copies and distribution of the Software shall remain within the direct control of Buyer and its representatives. 
+
+2.2 Buyer may make modifications to the source code version of the Software, if and only if the results of all such modifications are applied solely to the control system in which the Software is implemented. In no way does this Software License confer any right in Buyer to license, sublicense, sell, or otherwise authorize the use or distribution of the Software, whether in executable form, source code or otherwise, by any third parties, except in connection with the use of the control system for Buyer's internal business needs.
+
+2.3 All express or implied warranties relating to the Software shall be deemed null and void in case of any modification to the Software made by any party other than Seller or Seller’s authorized personnel.
+
+3. Warranties and Representations
+3.1 the Software and all intellectual property therein, are original to Seller or its third party licensors; and
+
+
+3.2 the Software, as delivered by Seller as part of the control system, will not infringe or otherwise violate the intellectual property rights of any third party.
+
+4. Indemnification
+
+4.1 Seller hereby indemnifies and shall defend and hold harmless Buyer, its parent companies and its and their subsidiaries, affiliates, officers, directors, employees, agents and subcontractors from and against all liability, damages, loss, cost or expense, including but not limited to reasonable attorneys' fees and expenses, arising out of or in connection with any third party claims that the Software as delivered by Seller or any intellectual property therein infringes or otherwise violates any rights of any such third party. In no event will Seller have any obligations under this provision in the event such infringement results from (i) use of the Software or control system in which it is implemented in violation of this Software License, (ii) modification or alteration of the Software or the control system in which it is implemented by someone other than Seller or Seller’s authorized personnel, (iii) content or specifications provided by Buyer, or (iv) use of the Software or control system in which it is implemented in combination with any other software, hardware, services or other materials other than as provided by Seller or authorized
+in the applicable manufacturer specifications.
+
+4.2 Buyer hereby indemnifies and shall defend and hold harmless Seller, its parent companies and its and their subsidiaries, affiliates, officers, directors, employees, agents and third party licensors from and against all liability, damages, loss, cost or expense, including but not limited to reasonable attorneys' fees and expenses,
+arising out of or in connection with any third party claims that Buyer's use of the Software in contravention of the grant of rights in this Software License infringes or otherwise violates any rights of any such third party.
+
+4.3 Upon the assertion of any claim or the commencement of any suit or proceeding against an indemnitee by any third party that may give rise to liability of an indemnitor hereunder, the indemnitee shall promptly notify the indemnitor of the existence of such a claim and shall give the indemnitor reasonable opportunity to defend and to settle the claim at its own expense and with counsel of its own selection. The indemnitee shall cooperate with the indemnitor, shall at all times have the full right to participate in such a defense at its own expense and shall not be obligated, against its consent, to participate in any settlement which it reasonably believes would have an adverse effect on its business.
+
+5. Term and Termination
+This Software License will automatically terminate upon the disassembly of the control system in which the Software is implemented, unless the control system is reassembled in its original configuration in another location. Seller may terminate this Software License upon notice for Buyer’s failure to comply with any of the terms set forth in this Software License. Upon termination, Buyer is obligated to immediately destroy the Software, including all copies and modifications.
