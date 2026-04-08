@@ -1,0 +1,328 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************
+
+	Programmer:       Dan Whidden
+	Updated:		  11/17/12
+	Comments:		  power
+
+*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+
+#SYMBOL_NAME "power mod5 dcw"
+
+
+#DEFAULT_VOLATILE
+//#DEFAULT_NONVOLATILE		// keep data after restart
+//#ENABLE_STACK_CHECKING   
+  
+#HELP_BEGIN
+	
+
+#HELP_END
+
+#define_constant nPulse  30
+#define_constant nMaxin  8
+
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL(BUFFER) INPUTS and OUTPUTS
+*******************************************************************************************/
+digital_input 	Send_Source_Always,
+				On_FB_status, 
+				Off_FB_status, 
+				_skip_;
+
+Analog_input 	Input_src,
+				_skip_, 
+				On_time, 
+				Off_time;
+string_input	proj_warm$[50], Proj_cool$[50];
+
+Digital_output 	Power_on, 
+				Power_off,
+				_skip_,
+				Screen_up, 
+				Screen_down,
+				_skip_,
+				Subpage_On_FB,
+				Subpage_OFF_FB,
+				_skip_, 
+				Input_once, Input[7];
+
+Analog_output 	Ramptime;
+String_output 	Countdown$, Seconds$;
+
+
+/*******************************************************************************************
+  Global Variables  -- Integer / String
+*******************************************************************************************/
+integer Enable, Pontime, Pofftime, i,
+		Son, Soff, retrigger, forgoing;
+integer nProj_FB, src;
+string cProj_warm$[50], cProj_cool$[50];                    
+                     
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/  
+
+Function Power_off_go3()
+{		
+	Pulse(nPulse, power_off);
+	
+	If(nProj_FB = 1 && forgoing = 0)
+	{		
+		//If(!Send_Source_Always) pulse(npulse, screen_up);
+        //retrigger = src;
+        
+		Pofftime = (off_time/100);
+		Subpage_off_FB = 1;
+		forgoing = 1;
+		
+		for(i = 0 to Pofftime)
+		{
+			makestring(countdown$,"%s %u seconds",cProj_cool$, (Pofftime-i));
+			makestring(seconds$,"%u",(Pofftime-i));
+			Ramptime = muldiv(i,65535,Pofftime);				
+			delay(100);
+			If (i = Pofftime)
+			{
+				Subpage_off_FB = 0;
+				forgoing = 0;
+				break;
+			}
+		}
+	}
+}
+
+Function Power_on_go2()
+{							
+	If(nProj_FB = 0 && forgoing = 0)
+	{
+		Pulse(nPulse, power_on);
+		//If(!Send_Source_Always) pulse(npulse, screen_down);
+
+		Pontime = (On_time/100);		
+		
+		Subpage_on_FB = 1;
+		forgoing = 1;
+		
+		for(i = 0 to Pontime)
+		{
+			makestring(countdown$,"%s %u seconds",cProj_warm$, (Pontime-i));
+			makestring(seconds$,"%u",(Pontime-i));
+			Ramptime = muldiv(i,65535,Pontime);					
+			delay(100);
+			If (i = Pontime)
+			{
+				if(src <> 0)
+				{
+					If(src < nMaxin) Pulse(nPulse,input[src]);  
+					Pulse(nPulse,input_once);
+				}
+				Subpage_on_FB = 0;
+				forgoing = 0;
+				If(src = 0){call Power_off_go3();}
+				break;
+			}
+		}	
+	}
+}
+
+Function Power_off_go2()
+{		
+	Pulse(nPulse, power_off);
+	
+	If(nProj_FB = 1 && forgoing = 0)
+	{		
+		//If(!Send_Source_Always) pulse(npulse, screen_up);
+        //retrigger = src;
+        
+		Pofftime = (off_time/100);
+		Subpage_off_FB = 1;
+		forgoing = 1;
+		
+		for(i = 0 to Pofftime)
+		{
+			makestring(countdown$,"%s %u seconds",cProj_cool$, (Pofftime-i));
+			makestring(seconds$,"%u",(Pofftime-i));
+			Ramptime = muldiv(i,65535,Pofftime);				
+			delay(100);
+			If (i = Pofftime)
+			{
+				Subpage_off_FB = 0;
+				forgoing = 0;
+				If(src > 0) { call Power_on_go2();  }
+				break;
+			}
+		}
+	}
+}
+
+Function Power_on_go()
+{							
+	If(nProj_FB = 0 && forgoing = 0)
+	{
+		Pulse(nPulse, power_on);
+		//If(!Send_Source_Always) pulse(npulse, screen_down);
+
+		Pontime = (On_time/100);		
+		
+		Subpage_on_FB = 1;
+		forgoing = 1;
+		
+		for(i = 0 to Pontime)
+		{
+			makestring(countdown$,"%s %u seconds",cProj_warm$, (Pontime-i));
+			makestring(seconds$,"%u",(Pontime-i));
+			Ramptime = muldiv(i,65535,Pontime);					
+			delay(100);
+			If (i = Pontime)
+			{
+				if(src <> 0)
+				{
+					If(src < nMaxin) Pulse(nPulse,input[src]);  
+					Pulse(nPulse,input_once);
+				}
+				Subpage_on_FB = 0;
+				forgoing = 0;
+				If(src = 0){call Power_off_go2();}
+				break;
+			}
+		}	
+	}
+}
+
+Function Power_off_go()
+{		
+	Pulse(nPulse, power_off);
+	
+	If(nProj_FB = 1 && forgoing = 0)
+	{		
+		//If(!Send_Source_Always) pulse(npulse, screen_up);
+        
+		Pofftime = (off_time/100);
+		Subpage_off_FB = 1;
+		forgoing = 1;
+		
+		for(i = 0 to Pofftime)
+		{
+			makestring(countdown$,"%s %u seconds",cProj_cool$, (Pofftime-i));
+			makestring(seconds$,"%u",(Pofftime-i));
+			Ramptime = muldiv(i,65535,Pofftime);				
+			delay(100);
+			If (i = Pofftime)
+			{
+				Subpage_off_FB = 0;
+				forgoing = 0;
+				If(src > 0) { call Power_on_go();  }
+				break;
+			}
+		}
+	}
+}
+                                          
+Function Source_change()
+{
+	If(!Send_Source_Always)
+	{
+		Switch(src)
+		{
+			case(0):
+			{	
+				If (nProj_FB = 1)
+					call Power_off_go();
+				Else
+				{
+					Pulse(nPulse, power_off);		
+				}
+			}
+			default:
+			{
+				If (nProj_FB = 1)
+				{ 
+					If(src < nMaxin)
+						Pulse(nPulse, Input[src]);
+				}
+				Else
+					Call Power_on_go();
+			}
+		}
+	}
+	If (Send_Source_Always)
+	{
+		Switch(src)
+		{
+			case(0):
+			{
+				Cancelallwait();
+				Pulse(nPulse, power_off);				
+			}
+			default:
+			{
+				Cancelallwait();
+				
+				If(src < nMaxin) Pulse(nPulse, Input[src]); 
+				
+				delay(50); 
+				
+				Pulse(nPulse, power_on);  
+				
+				wait(on_time, wait2)
+				{ 
+					If(src < nMaxin) Pulse(nPulse, Input[src]);
+					Pulse(nPulse,input_once);
+				}
+			}
+		}		
+	}
+}
+
+/*******************************************************************************************
+  Event Handlers***   Push Release Change Event
+****************************************************************************************/
+
+push On_FB_status	{delay(20); nProj_FB = 1;}
+push Off_FB_status	{delay(20); nProj_FB = 0;}
+
+
+change Input_src
+{
+	If(Enable = 1)
+	{		
+		If(input_src = 0)
+		{
+			If (forgoing = 0) pulse(nPulse, screen_up);
+		}
+		Else
+		{
+			If (forgoing = 0) pulse(nPulse, screen_down);
+		}
+		
+		src = input_src;
+		call Source_change();
+	}
+}
+
+change proj_warm$	{cProj_warm$ = Proj_warm$;}
+change proj_cool$	{cProj_cool$ = Proj_cool$;}
+
+
+	  
+/*******************************************************************************************
+  Main()          Start-up Code
+*******************************************************************************************/
+Function Main()
+{
+	Enable = 0;
+	WaitForInitializationComplete();
+	Enable = 0;
+	
+	Delay(2000);
+		Enable = 1;
+}
+
+/*******************************************************************************************
+  End of Code
+*******************************************************************************************/

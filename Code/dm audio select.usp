@@ -1,0 +1,118 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************/
+/*
+Dealer Name:  dcw
+System Name:
+System Number:
+Programmer:
+Comments:
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+#SYMBOL_NAME "DM audio select"
+#DEFINE_CONSTANT	cinput	50
+// #CATEGORY "" 
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENCODING_ASCII
+
+/*
+#HELP_BEGIN
+   (add additional lines of help lines)
+#HELP_END
+*/
+
+
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT Select[16];
+ANALOG_INPUT src[16];
+// STRING_INPUT 
+// BUFFER_INPUT 
+
+// DIGITAL_OUTPUT 
+ANALOG_OUTPUT Audio_out;
+// STRING_OUTPUT 
+
+
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+INTEGER idefinedsources;
+// LONG_INTEGER
+// SIGNED_INTEGER
+// SIGNED_LONG_INTEGER
+// STRING
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+/*
+Function 
+{
+	
+}
+*/
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+
+PUSH Select
+{
+	integer g;
+	g = getlastmodifiedarrayindex();
+
+	audio_out = src[g];	
+}
+
+
+/*
+RELEASE 
+{
+   	
+}
+*/
+
+
+CHANGE src
+{
+	integer h;
+	h = getlastmodifiedarrayindex();
+
+	If(Select[h])
+	{
+    	audio_out = src[h];
+	}
+    
+}
+
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+
+Function Main()
+{
+    integer i;
+    
+    WaitForInitializationComplete();
+    
+    //for(i = cinput TO 1 STEP -1)
+	//	if(IsSignalDefined(Vol_level[i]))
+	//		break;
+			
+	iDefinedsources = i;
+}
+
+

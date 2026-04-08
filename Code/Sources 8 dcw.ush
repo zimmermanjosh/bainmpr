@@ -1,0 +1,255 @@
+[BEGIN]
+  Version=1
+[END]
+[BEGIN]
+  ObjTp=FSgntr
+  Sgntr=UserSPlus
+  RelVrs=1
+  IntStrVrs=1
+  SPlusVrs=4.04.01
+  CrossCplrVrs=1.3
+[END]
+[BEGIN]
+  ObjTp=Hd
+  Cmn1=||3For up to 50 sources on a TP, with toggle shutdown page popup||1
+  Cmn2=if needed \\   \\   With crosspoint control. Make sure to link the||1
+  Cmn3=connect and disconnect\\   		TP_XP is the touchpanel crosspoint||1
+  Cmn4=(200), \\   		Equip_XP is the beginning of the inputs (100) so the||1
+  Cmn5=first source is 101\\   		Add an equipment/control connect for each||1
+  Cmn6='sources dcw' used \\   		\\   1 = Autoshut down will turn system||1
+  Cmn7=off when page is selected after time allowed\\   		coutdown timer||1
+  Cmn8=will indicate time left\\   0 = Autoshut down will close page after||1
+  Cmn9=Time allowed\\   \\   use proj_src to turn on/off projector from||1
+  Cmn10=inputs - sends as 1d\\   use DM_out for input selection for DM,||1
+  Cmn11=follows proj_src\\||3
+[END]
+[BEGIN]
+  ObjTp=Symbol
+  Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,718,756,854,
+  Exclusions_CDS=5
+  Inclusions_CDS=6
+  Name=Sources 8 dcw
+  SmplCName=Sources 8 dcw.usp
+  Code=1
+  SysRev5=4.006
+  SMWRev=3.00.00
+  InputCue1=[~UNUSED~]
+  InputSigType1=Digital
+  InputCue2=[~UNUSED~]
+  InputSigType2=Digital
+  InputCue3=[~UNUSED~]
+  InputSigType3=Digital
+  InputCue4=[~UNUSED~]
+  InputSigType4=Digital
+  InputCue5=[~UNUSED~]
+  InputSigType5=Digital
+  InputCue6=[~UNUSED~]
+  InputSigType6=Digital
+  InputCue7=start_up_init
+  InputSigType7=Digital
+  InputCue8=[~UNUSED~]
+  InputSigType8=Digital
+  InputCue9=Shutdown_page
+  InputSigType9=Digital
+  InputCue10=Shutdown_yes
+  InputSigType10=Digital
+  InputCue11=Shutdown_no
+  InputSigType11=Digital
+  InputCue12=Clear_subpages_when_high
+  InputSigType12=Digital
+  InputCue13=[~UNUSED~]
+  InputSigType13=Digital
+  InputCue14=Auto_shutdown
+  InputSigType14=Digital
+  InputCue15=[~UNUSED~]
+  InputSigType15=Digital
+  InputCue16=Instructions
+  InputSigType16=Digital
+  InputCue17=Source[#]
+  InputSigType17=Digital
+  OutputCue1=[~UNUSED~]
+  OutputSigType1=Digital
+  OutputCue2=[~UNUSED~]
+  OutputSigType2=Digital
+  OutputCue3=[~UNUSED~]
+  OutputSigType3=Digital
+  OutputCue4=[~UNUSED~]
+  OutputSigType4=Digital
+  OutputCue5=[~UNUSED~]
+  OutputSigType5=Digital
+  OutputCue6=[~UNUSED~]
+  OutputSigType6=Digital
+  OutputCue7=[~UNUSED~]
+  OutputSigType7=Digital
+  OutputCue8=[~UNUSED~]
+  OutputSigType8=Digital
+  OutputCue9=Shutdown_FB
+  OutputSigType9=Digital
+  OutputCue10=Shutdown_go
+  OutputSigType10=Digital
+  OutputCue11=[~UNUSED~]
+  OutputSigType11=Digital
+  OutputCue12=Connect_XP
+  OutputSigType12=Digital
+  OutputCue13=Disconnect_XP
+  OutputSigType13=Digital
+  OutputCue14=[~UNUSED~]
+  OutputSigType14=Digital
+  OutputCue15=[~UNUSED~]
+  OutputSigType15=Digital
+  OutputCue16=Instructions_FB
+  OutputSigType16=Digital
+  OutputCue17=Source_FB[#]
+  OutputSigType17=Digital
+  OutputList2Cue1=[~UNUSED~]
+  OutputList2SigType1=Analog
+  OutputList2Cue2=Cross_TP
+  OutputList2SigType2=Analog
+  OutputList2Cue3=Cross_Equip
+  OutputList2SigType3=Analog
+  OutputList2Cue4=[~UNUSED~]
+  OutputList2SigType4=Serial
+  OutputList2Cue5=Current_source$
+  OutputList2SigType5=Serial
+  OutputList2Cue6=countdown$
+  OutputList2SigType6=Serial
+  OutputList2Cue7=Source_Text$
+  OutputList2SigType7=Serial
+  OutputList2Cue8=[~UNUSED~]
+  OutputList2SigType8=Serial
+  OutputList2Cue9=Proj_src
+  OutputList2SigType9=Analog
+  OutputList2Cue10=DM_out[#]
+  OutputList2SigType10=Analog
+  ParamCue1=[Reference Name]
+  ParamCue2=File_Name$
+  ParamSigType2=String
+  ParamCue3=TP_XP
+  ParamSigType3=Constant
+  ParamCue4=Equip_XP
+  ParamSigType4=Constant
+  ParamCue5=Shutdown_time
+  ParamSigType5=Time
+  ParamCue6=No_proj
+  ParamSigType6=Constant
+  ParamCue7=Source_0$
+  ParamSigType7=String
+  MinVariableInputs=17
+  MaxVariableInputs=166
+  MinVariableInputsList2=0
+  MaxVariableInputsList2=0
+  MinVariableOutputs=17
+  MaxVariableOutputs=166
+  MinVariableOutputsList2=10
+  MaxVariableOutputsList2=25
+  MinVariableParams=6
+  MaxVariableParams=6
+  Expand=expand_inputs_with_outputs
+  Expand2=expand_separately
+  ProgramTree=Logic
+  SymbolTree=46
+  UserSymTreeName=Dan Mods
+  Hint=
+  PdfHelp=
+  HelpID= 
+  Render=4
+  Smpl-C=16
+  CompilerCode=-48
+  CompilerParamCode=27
+  CompilerParamCode5=14
+  NumFixedParams=1
+  Pp1=1
+  Pp2=2
+  Pp3=3
+  Pp4=4
+  Pp5=5
+  Pp6=6
+  Pp7=7
+  MPp=7
+  NVStorage=10
+  ParamSigType1=String
+  SmplCInputCue1=o#
+  SmplCOutputCue1=i#
+  SmplCInputList2Cue1=an#
+  SmplCOutputList2Cue1=ai#
+  SPlus2CompiledName=S2_Sources_8_dcw
+  SymJam=NonExclusive
+  FileName=Sources 8 dcw.ush
+  SIMPLPlusModuleEncoding=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=1
+  Tp=1
+  NoS=False
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=2
+  Tp=1
+  HD=True
+  DV=DM_Inputs
+  NoS=False
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=3
+  Tp=1
+  HD=True
+  DV=101d
+  Sgn=0
+  Lng=False
+  NF=1
+  NoS=True
+  DNF=1
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=4
+  Tp=1
+  HD=True
+  DV=200d
+  Sgn=0
+  Lng=False
+  NF=1
+  NoS=True
+  DNF=1
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=5
+  Tp=1
+  HD=True
+  DV=120s
+  Sgn=0
+  Lng=False
+  NF=16
+  NoS=True
+  DNF=16
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=6
+  Tp=1
+  HD=True
+  DV=17d
+  Sgn=0
+  Lng=False
+  NF=1
+  NoS=True
+  DNF=1
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=7
+  Tp=1
+  HD=True
+  DV=Instructions
+  NoS=False
+  VVS=0
+[END]

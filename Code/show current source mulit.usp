@@ -1,0 +1,227 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************
+Dealer Name:  dcw
+System Name:
+System Number:
+Programmer:
+Comments:
+
+*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+
+//#SYMBOL_NAME ""
+
+#DEFINE_CONSTANT	cinput	50
+
+// #CATEGORY "46" "Dan" 
+
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENCODING_ASCII
+
+
+#HELP_BEGIN
+
+
+#HELP_END
+
+
+
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT _skip_, Show, Mode12, Mode23, Mode34; 
+// ANALOG_INPUT 
+STRING_INPUT _skip_, DMin1[3][35];
+STRING_INPUT _skip_, DMin2[3][35];
+STRING_INPUT _skip_, DMin3[3][35];
+STRING_INPUT _skip_, DMin4[3][35], _skip_;
+
+
+// BUFFER_INPUT 
+
+DIGITAL_OUTPUT _skip_, show_FB;
+// ANALOG_OUTPUT 
+STRING_OUTPUT _skip_, DM_out;
+
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+// INTEGER_PARAMETER
+// STRING_PARAMETER
+
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+/*
+#BEGIN_PARAMETER_PROPERTIES 
+   propValidUnits = unitString;  //unitDecimal|unitHex|unitPercent|unitCharacter|unitTime|unitTicks;
+   propDefaultUnit = unitString;  //unitDecimal, unitHex, unitPercent, unitCharacter, unitTime or unitTicks;
+   propDefaultValue = ;  // or, propDefaultValue = "";
+   // propList = { "value" , "label" } , { "value" , "label" };
+#END_PARAMETER_PROPERTIES
+*/
+
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+INTEGER Enable,iDefinedsources;
+// LONG_INTEGER
+// SIGNED_INTEGER
+// SIGNED_LONG_INTEGER
+STRING sDMin1[3][35];
+STRING sDMin2[3][35];
+STRING sDMin3[3][35];
+STRING sDMin4[3][35];
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+
+Function Check()
+{
+	integer n;	
+	string temp[35];
+	
+	DM_out = sDMin1[1];	// off, input
+	
+	for(n = 1 to 3)
+	{
+		If(sDMin1[n] <> "Off")
+		{	
+			temp = sDMin1[n];
+			DM_out = temp;
+			//break;	
+		}
+		If(sDMin2[n] <> "Off" & Mode12)
+		{	
+			temp = sDMin2[n];
+			DM_out = temp;
+			//break;	
+		}
+		If(sDMin3[n] <> "Off" & Mode23)
+		{	
+			temp = sDMin3[n];
+			DM_out = temp;
+			//break;	
+		}
+		If(sDMin4[n] <> "Off" & Mode34)
+		{	
+			temp = sDMin4[n];
+			DM_out = temp;
+			//break;	
+		}	
+	}
+	for(n = 1 to 3)
+	{
+		If(sDMin1[n] <> "Off" & sDMin1[n] <> temp)
+			DM_out = "Multi";
+		
+		If(sDMin2[n] <> "Off" & sDMin2[n] <> temp & mode12)
+			DM_out = "Multi";				
+	
+		If(sDMin3[n] <> "Off" & sDMin3[n] <> temp & mode23)
+			DM_out = "Multi";
+			
+		If(sDMin4[n] <> "Off" & sDMin4[n] <> temp & mode34)
+			DM_out = "Multi";
+	}	
+	
+	
+}
+
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+
+Push Mode12, Mode23, Mode34
+{
+	check();
+}
+release Mode12, Mode23, Mode34
+{
+	check();
+}
+
+
+PUSH Show
+{
+	show_FB = 1;
+	check();	
+}
+Release Show
+{
+	show_FB = 0;
+}
+
+CHANGE DMin1
+{
+	integer n;
+	n = getlastmodifiedarrayindex();
+	
+	sDMin1[n] = DMin1[n]; 
+	check();   
+}
+
+CHANGE DMin2
+{
+	integer n;
+	n = getlastmodifiedarrayindex();
+	
+	sDMin2[n] = DMin2[n]; 
+	check();   
+}
+
+CHANGE DMin3
+{
+	integer n;
+	n = getlastmodifiedarrayindex();
+	
+	sDMin3[n] = DMin3[n]; 
+	check();   
+}
+
+CHANGE DMin4
+{
+	integer n;
+	n = getlastmodifiedarrayindex();
+	
+	sDMin4[n] = DMin4[n]; 
+	check();   
+}
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+
+Function Main()
+{    
+    integer n;
+    
+    Enable = 0;
+    
+    for(n = 1 to 3)
+    {
+    	sDMin1[n] = "Off";
+    	sDMin2[n] = "Off";
+    	sDMin3[n] = "Off";
+    	sDMin4[n] = "Off";
+    }
+
+    WaitForInitializationComplete();  
+    	
+	delay(1000);
+		Enable = 1;
+}
+
+

@@ -1,0 +1,125 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************/
+/*
+Dealer Name:  dcw
+System Name:
+System Number:
+Programmer:
+Comments:
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+#SYMBOL_NAME "DM input to output r1"
+#DEFINE_CONSTANT	cinput	50
+#CATEGORY "46" "Dan DM Mods" // Custom 
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENCODING_ASCII
+
+/*
+#HELP_BEGIN
+   (add additional lines of help lines)
+#HELP_END
+*/
+
+
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT _skip_, input0, input[32], output[60];
+// ANALOG_INPUT 
+// STRING_INPUT 
+// BUFFER_INPUT 
+
+// DIGITAL_OUTPUT 
+ANALOG_OUTPUT _skip_, _skip_, DM_output[60];
+// STRING_OUTPUT 
+
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+INTEGER_PARAMETER Selection;
+// STRING_PARAMETER
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+
+#BEGIN_PARAMETER_PROPERTIES Selection
+   propValidUnits = unitDecimal; //|unitHex|unitPercent|unitCharacter|unitTime|unitTicks;
+   propDefaultUnit = unitDecimal; //, unitHex, unitPercent, unitCharacter, unitTime or unitTicks;
+   propDefaultValue = 1d;  // or, propDefaultValue = "";
+   propList = { 1d , "Input to Output" } , { 2d , "Output to Input" };
+#END_PARAMETER_PROPERTIES
+
+
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+INTEGER idefinedsources, ninput, noutput;
+// LONG_INTEGER
+// SIGNED_INTEGER
+// SIGNED_LONG_INTEGER
+// STRING
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+/*
+Function 
+{
+	
+}
+*/
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+
+Push input0
+{
+	ninput = 0;
+
+	If(Selection = 2)	{	DM_output[noutput] = ninput;	}	
+}
+
+
+PUSH input
+{
+	ninput = getlastmodifiedarrayindex();
+	
+	If(Selection = 2)	{	DM_output[noutput] = ninput;	}	
+}
+
+push output
+{
+    noutput = getlastmodifiedarrayindex();
+    
+    If(Selection = 1)	{	DM_output[noutput] = ninput;	}
+}
+
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+
+Function Main()
+{
+    integer i;
+    
+    WaitForInitializationComplete();
+			
+	iDefinedsources = i;
+}
+
+

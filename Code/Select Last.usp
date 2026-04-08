@@ -1,0 +1,134 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************
+Dealer Name:  dcw
+System Name:
+System Number:
+Programmer:
+Comments:
+
+*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+
+//#SYMBOL_NAME ""
+
+#DEFINE_CONSTANT	cinput	50
+
+// #CATEGORY "46" "Dan" 
+
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENCODING_ASCII
+
+
+#HELP_BEGIN
+
+
+#HELP_END
+
+
+
+#DIGITAL_EXPAND 	InputsWithOutputs
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT last, _skip_, Select[cinput];
+// ANALOG_INPUT 
+// STRING_INPUT
+// BUFFER_INPUT 
+
+DIGITAL_OUTPUT _skip_, _skip_, Select_FB[cinput];
+// ANALOG_OUTPUT 
+// STRING_OUTPUT
+
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+// INTEGER_PARAMETER
+// STRING_PARAMETER
+
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+/*
+#BEGIN_PARAMETER_PROPERTIES 
+   propValidUnits = unitString;  //unitDecimal|unitHex|unitPercent|unitCharacter|unitTime|unitTicks;
+   propDefaultUnit = unitString;  //unitDecimal, unitHex, unitPercent, unitCharacter, unitTime or unitTicks;
+   propDefaultValue = ;  // or, propDefaultValue = "";
+   // propList = { "value" , "label" } , { "value" , "label" };
+#END_PARAMETER_PROPERTIES
+*/
+
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+INTEGER Enable, ilast, ilast2;
+// LONG_INTEGER
+// SIGNED_INTEGER
+// SIGNED_LONG_INTEGER
+// STRING
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+/*
+Function 
+{
+	
+}
+*/
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+
+push last
+{
+	setarray(select_FB,0);
+	select_FB[ilast2] = 1;
+}
+
+PUSH select
+{
+	If(ilast < 20)
+		ilast2 = ilast;
+	
+	ilast = getlastmodifiedarrayindex();
+	
+	setarray(select_FB,0);
+	select_FB[ilast] = 1;	
+}
+
+
+
+/*
+CHANGE	
+{
+	   
+}
+*/
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+
+Function Main()
+{    
+    Enable = 0;
+    
+    WaitForInitializationComplete();  
+	
+	delay(1000);
+		Enable = 1;
+}
+
+
