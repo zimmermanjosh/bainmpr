@@ -1,0 +1,224 @@
+/* Zachary Johnson 
+   AVI-SPL
+*/
+#DEFINE_CONSTANT MAX_SIZE 32 
+#DEFINE_CONSTANT BUFFER_SIZE 255
+#DEFINE_CONSTANT HALF_SEC 50
+#DEFINE_CONSTANT FULL_SEC 100
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENCODING_ASCII
+
+digital_input RefreshRouteFb, ClearOutputs, BlankInput, Inputs[MAX_SIZE], _skip_, 
+	Outputs[MAX_SIZE], AudioOutput[1], _skip_, InputToAll[MAX_SIZE], _skip_, InputToAudio[MAX_SIZE];
+analog_input _skip_, AudioSrcFb, VideoSrcFb[MAX_SIZE];
+string_input _skip_, BlankInputName[1][BUFFER_SIZE], InputNames[MAX_SIZE][BUFFER_SIZE];
+string_input _skip_, EncoderStreamLocation[MAX_SIZE][BUFFER_SIZE];
+analog_input _skip_, _skip_, BlankIconAnalog[1], IconsAnalog[MAX_SIZE];
+string_input _skip_, _skip_,BlankIconSerial[1][BUFFER_SIZE], IconsSerial[MAX_SIZE][BUFFER_SIZE];
+analog_input _skip_, VideoSrcOverride[MAX_SIZE], AudioSrcOverride[1];
+
+digital_output _skip_, _skip_, BlankInputFb, InputsFb[MAX_SIZE], _skip_, OutputsFb[MAX_SIZE], AudioOutputFb[1],
+	_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,
+	_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,
+    _skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,
+	_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_;
+analog_output _skip_,  AudioSrc, VideoSrc[MAX_SIZE];
+string_output _skip_, AudioSourceRouted[1], SourceRouted[MAX_SIZE];
+string_output _skip_, DecoderStreamLocation[MAX_SIZE], DecoderAudioStreamLocation[1];
+analog_output _skip_, AudioSourceIconAnalog[1], SourceIconsAnalog[MAX_SIZE];
+string_output _skip_, _skip_, AudioSourceIconSerial[1], SourceIconsSerial[MAX_SIZE];
+
+integer inputSelected, outputSelected;
+
+function routeNVX(integer in, integer out)
+{
+    if (in > 0)
+        DecoderStreamLocation[out] = EncoderStreamLocation[in];
+    else
+        DecoderStreamLocation[out] = "";
+}
+
+function routeNVXAudio(integer in, integer out)
+{
+ 	if (in > 0)
+    	DecoderAudioStreamLocation[1] = EncoderStreamLocation[in];
+	else
+		DecoderAudioStreamLocation[1] = "";
+}
+
+function getRoutes(integer in)
+{
+    integer i;
+
+    AudioOutputFb[1] = off;
+    for(i = 1 to MAX_SIZE) 
+    {
+       if(VideoSrcFb[i] = in) 
+       {
+			OutputsFb[i] = on;
+			if (VideoSrcFb[i] > 0)
+            	SourceRouted[i] = InputNames[VideoSrcFb[i]];	
+			else
+            	SourceRouted[i] = BlankInputName[1];
+       }
+	   else
+	   {
+        	OutputsFb[i] = off;
+	   }
+       if (AudioSrcFb = in)
+       {
+            AudioOutputFb[1] = on;
+			if (AudioSrcFb > 0)
+				AudioSourceRouted[1] = InputNames[AudioSrcFb];            	
+			else
+				AudioSourceRouted[1] = BlankInputName[1];	
+       }
+    }
+}
+
+function inputSelect(integer in)
+{
+	inputSelected = in;
+    setArray(InputsFb, off);
+    BlankInputFb = off;
+	if (in > 0)
+    	InputsFb[inputSelected] = on;
+	else
+		BlankInputFb = on;
+    getRoutes(inputSelected);
+}
+
+function routeToAllOutputs(integer in)
+{
+    integer out;
+
+    for(out = 1 to MAX_SIZE) 
+    {
+        VideoSrc[out] = in;
+        routeNVX(in, out);
+    }
+	AudioSrc = in;
+    routeNVXAudio(in, out);
+	inputSelect(in);          	
+   	delay(HALF_SEC);
+   	getRoutes(in);
+}
+
+push RefreshRouteFb
+{
+	getRoutes(inputSelected);
+}
+
+push ClearOutputs
+{
+    routeToAllOutputs(0);
+}
+
+push BlankInput
+{
+	inputSelect(0);
+}
+
+push Inputs
+{
+	inputSelect(getLastModifiedArrayIndex());
+}
+
+push Outputs
+{
+    outputSelected = getLastModifiedArrayIndex();
+    VideoSrc[outputSelected] = inputSelected;
+    routeNVX(inputSelected, outputSelected);
+    delay(HALF_SEC);
+    getRoutes(inputSelected);
+}
+
+push AudioOutput
+{
+    AudioSrc = inputSelected;
+    DecoderAudioStreamLocation[1] = EncoderStreamLocation[inputSelected];
+    getRoutes(inputSelected); 
+    delay(HALF_SEC);
+}
+
+push InputToAll
+{
+    routeToAllOutputs(getLastModifiedArrayIndex());
+}
+
+push InputToAudio
+{
+    integer in;
+
+    in = getLastModifiedArrayIndex();
+	AudioSrc = in;
+    DecoderAudioStreamLocation[1] = EncoderStreamLocation[in];
+}
+
+threadsafe change VideoSrcFb
+{
+    integer out, in;
+
+    out = getLastModifiedArrayIndex();
+    in = VideoSrcFb[out];
+	if (in > 0)
+	{
+    	SourceRouted[out] = InputNames[in];
+    	SourceIconsAnalog[out] = IconsAnalog[in];
+		SourceIconsSerial[out] = IconsSerial[in];
+	}
+	else
+	{
+        SourceRouted[out] = BlankInputName[1];
+    	SourceIconsAnalog[out] = BlankIconAnalog[1];
+		SourceIconsSerial[out] = BlankIconSerial[1];
+	}
+}
+
+threadsafe change AudioSrcFb
+{
+    integer out, in;
+
+    out = getLastModifiedArrayIndex();
+    in = AudioSrcFb;
+	if (in > 0)
+	{
+    	AudioSourceRouted[out] = InputNames[in];
+    	AudioSourceIconAnalog[out] = IconsAnalog[in];
+		AudioSourceIconSerial[out] = IconsSerial[in]; 	
+	}
+	else
+	{
+        AudioSourceRouted[out] = BlankInputName[1];
+    	AudioSourceIconAnalog[out] = BlankIconAnalog[1];
+		AudioSourceIconSerial[out] = BlankIconSerial[1];
+	}
+}
+
+threadsafe change VideoSrcOverride
+{
+    outputSelected = getLastModifiedArrayIndex();
+    routeNVX(VideoSrcOverride[outputSelected], outputSelected);
+    getRoutes(VideoSrcOverride[outputSelected]);
+    delay(HALF_SEC);
+}
+
+threadsafe change AudioSrcOverride
+{
+	if (AudioSrcOverride[1] > 0)
+    	DecoderAudioStreamLocation[1] = EncoderStreamLocation[AudioSrcOverride[1]];
+	else
+		DecoderAudioStreamLocation[1] = "";
+}
+
+Function Main()
+{
+    waitForInitializationComplete();
+    inputSelected = 0;
+    outputSelected = 0;
+	delay(FULL_SEC);
+	setArray(OutputsFb, off);
+	inputSelect(inputSelected);
+}
