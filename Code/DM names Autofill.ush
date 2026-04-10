@@ -11,16 +11,60 @@
 [END]
 [BEGIN]
   ObjTp=Hd
-  Cmn1=||3Turn on NVRAM\\   add text file\\   \\\\   example:\\   [INPUTS]\\
-  Cmn2=||31-name\\   2-name   \\   [OUTPUTS]\\   1-name\\   2-name\\||3
-  Cmn3=3-name\\   [END]\n\\||3
+  Cmn1=||3DM Names Autofill Input - Dynamic name lookup module.\\   Accepts||1
+  Cmn2=an analog input (DM source selection value) and outputs\\   the||1
+  Cmn3=corresponding input or output name string from an NVRAM text file.
+  Cmn4=\\\\   Reads the same DM_Inputs.txt file used by DM AutoFill modules.
+  Cmn5=\\   Auto-detects file format ([START]/[END] or [INPUTS]/[OUTPUTS]).
+  Cmn6=\\\\   =====================================================================\\
+  Cmn7=||3TYPICAL USE CASE\\   =========================================================
+  Cmn8=============\\\\   Wire the DM switcher's "Current Input" analog||1
+  Cmn9=output to Zone_Input[n].\\   When the switcher changes sources,||1
+  Cmn10=the module looks up the source name\\   and sends it to Input_Name$[n]||1
+  Cmn11=for display on the touchpanel.\\\\   ============================================
+  Cmn12==========================\\   FILE LOCATION\\   =================================
+  Cmn13=====================================\\\\   \\NVRAM\\<File_Name$>.
+  Cmn14=txt\\   Default: \\NVRAM\\DM_Inputs.txt\\\\   ===================================
+  Cmn15===================================\\   SUPPORTED FILE FORMATS\\||1
+  Cmn16=||2=====================================================================\\
+  Cmn17=\\   FORMAT 1 - DM Mode ([INPUTS]/[OUTPUTS]):\\   [INPUTS]\\   1-
+  Cmn18=RoomA Floorbox\\   2-RoomA Wallplate\\   3-RoomB Floorbox\\   [OUTPUTS]\\
+  Cmn19=||31-RoomA Display\\   2-RoomB Display\\   [END]\\\\   FORMAT 2||1
+  Cmn20=- Flat List ([START]/[END]):\\   [START]\\   1-Source One\\   2-
+  Cmn21=Source Two\\   3-Source Three\\   [END]\\\\   TIP: Use ~ to join||1
+  Cmn22=two words with a space in the output label.\\   Example: 1-Room||1
+  Cmn23=A~Floorbox outputs as "Room A Floorbox"\\\\   ===================================
+  Cmn24===================================\\   SPECIAL ANALOG INPUT VALUES\\
+  Cmn25=||3=====================================================================\\
+  Cmn26=\\   0    - Outputs the Input_zero$ parameter value (default: "Off")\\
+  Cmn27=||31-90 - Looks up sInput$[n] and outputs the name string\\   999||1
+  Cmn28=||1- Triggers a file re-read from NVRAM\\\\   =====================================
+  Cmn29=================================\\   SIGNALS\\   ================================
+  Cmn30======================================\\\\   ANALOG INPUTS:\\   Zone_Input[1-
+  Cmn31=90]   - Source selection value from DM switcher output.\\||7
+  Cmn32=||AChange triggers name lookup and string output.\\
+  Cmn33=\\   STRING OUTPUTS:\\   Input_Name$[1-90]  - Name string corresponding||1
+  Cmn34=to the current\\                        Zone_Input value for that||1
+  Cmn35=slot.\\\\   =====================================================================
+  Cmn36=\\   PARAMETERS\\   =============================================================
+  Cmn37=========\\\\   File_Name$    - NVRAM filename without path or extension.
+  Cmn38=\\                   Default: DM_Inputs\\                   Do NOT||1
+  Cmn39=include \\NVRAM\\ or .txt\\\\   Input_zero$   - String to output||1
+  Cmn40=when Zone_Input = 0.\\                   Default: Off\\||9
+  Cmn41=||:Typically used to indicate no source selected.\\\\   ==================
+  Cmn42====================================================\\   NOTES\\||1
+  Cmn43=||2=====================================================================\\
+  Cmn44=\\   - File is read automatically on processor initialization\\||1
+  Cmn45=||2- Send analog value 999 to any Zone_Input to force a file re-read\\
+  Cmn46=||3- Max 90 inputs/outputs (cinput constant)\\   - Max file buffer:
+  Cmn47=||15500 bytes\\   - Max name length: 30 characters\\
 [END]
 [BEGIN]
   ObjTp=Symbol
-  Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,718,756,854,
-  Exclusions_CDS=
-  Inclusions_CDS=5,6,7
-  Name=DM current input dcw
+  Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,362,378,380,405,407,408,409,478,522,537,554,586,590,611,624,718,756,767,830,841,842,854,883,955,1032,1062,1079,1128,1129,1134,1140,1157,1158,1195,1199,1220,1221,1222,1223,1299,1348,1349,1439,1472,1473,1499,1746,1803,1975,2229,2354,2514,2523,2532,2706,2707,3235,3236,3427,3454,3567,3568,3601,3602,3708,3902,3903,3912,3918,3925,3926,4206,4207,
+  Exclusions_CDS=5
+  Inclusions_CDS=6,7
+  Name=DM Names Autofill input
   SmplCName=DM names Autofill.usp
   Code=1
   SysRev5=4.000
@@ -56,7 +100,7 @@
   Expand2=expand_inputs_with_outputs
   ProgramTree=Logic
   SymbolTree=46
-  UserSymTreeName=Dan DM Mods
+  UserSymTreeName= DM Mods
   Hint=
   PdfHelp=
   HelpID= 

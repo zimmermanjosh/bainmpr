@@ -1,0 +1,176 @@
+[BEGIN]
+  Version=1
+[END]
+[BEGIN]
+  ObjTp=FSgntr
+  Sgntr=UserSPlus
+  RelVrs=1
+  IntStrVrs=1
+  SPlusVrs=4.06.00
+  CrossCplrVrs=1.3
+[END]
+[BEGIN]
+  ObjTp=Hd
+  Cmn1=||3Name_Changeable - Reads names from an NVRAM text file, allows||1
+  Cmn2=runtime\\   renaming via touchpanel, and writes changes back to||1
+  Cmn3=the file.\\\\   Operates in two modes depending on the File_Name$||1
+  Cmn4=parameter.\\\\   ================================================================
+  Cmn5======\\   MODE 1 - STANDARD MODE  (any filename other than "DM_Inputs")\\
+  Cmn6=||3=====================================================================\\
+  Cmn7=\\   FILE LOCATION:\\   \\NVRAM\\<someprogramid>\\<File_Name$>.txt\\
+  Cmn8=||3Default: \\NVRAM\\<someprogramid>\\Name_Changeable.txt\\\\||3
+  Cmn9=FILE FORMAT:\\   [START]\\   1-Name One\\   2-Name Two\\   3-Name||1
+  Cmn10=Three\\   [END]\\\\   EXAMPLE FILE (Standard Mode):\\   [START]\\
+  Cmn11=||31-Conference Room A\\   2-Conference Room B\\   3-Huddle Space||1
+  Cmn12=1\\   4-Huddle Space 2\\   5-Lobby Display\\   [END]\\\\   NOTES:
+  Cmn13=\\   - Supports up to 32 names\\   - Max name length: 25 characters\\
+  Cmn14=||3- [START] and [END] must each be on their own line\\   - Lines||1
+  Cmn15=without a number-dash prefix are ignored\\\\   ==================================
+  Cmn16====================================\\   MODE 2 - DM MODE  (File_Name$||1
+  Cmn17=must be exactly "DM_Inputs")\\   ================================================
+  Cmn18======================\\\\   FILE LOCATION:\\   \\NVRAM\\DM_Inputs.
+  Cmn19=txt\\\\   FILE FORMAT:\\   [INPUTS]\\   1-Input Name\\   2-Input||1
+  Cmn20=Name\\   [OUTPUTS]\\   1-Output Name\\   2-Output Name\\   [END]\\
+  Cmn21=\\   EXAMPLE FILE (DM Mode):\\   [INPUTS]\\   1-RoomA Floorbox\\
+  Cmn22=||32-RoomA Wallplate\\   3-RoomB Floorbox\\   4-RoomB Wallplate\\
+  Cmn23=||3[OUTPUTS]\\   1-RoomA Codec 1\\   2-RoomA Codec 2\\   3-RoomB||1
+  Cmn24=Codec 1\\   4-RoomB Codec 2\\   [END]\\\\   NOTES:\\   - Inputs||1
+  Cmn25=occupy slots 1-16  (Name$[1]  - Name$[16])\\   - Outputs occupy||1
+  Cmn26=slots 17-32 (Name$[17] - Name$[32])\\   - Max 16 inputs and 16 outputs\\
+  Cmn27=||3- Supports optional [END2] section preserved on write\\\\   ==================
+  Cmn28====================================================\\   SIGNALS\\
+  Cmn29=||3=====================================================================\\
+  Cmn30=\\   DIGITAL INPUTS:\\   Read              - Pulse to read file||1
+  Cmn31=from NVRAM and populate outputs\\   Save              - Pulse to||1
+  Cmn32=save the New_Name$ to selected slot and\\||G
+  Cmn33=write back to NVRAM\\   Cancel            - Clears selection, hides||1
+  Cmn34=save UI feedback\\   None              - Clears current selection||1
+  Cmn35=without saving\\   Name_toChange[n]  - Pulse index n to select that||1
+  Cmn36=name for editing\\                       (1-32). Outputs current||1
+  Cmn37=name to Current_Name$\\                       and sets Show_Save_FB||1
+  Cmn38=high\\\\   STRING INPUT:\\   New_Name$[25]     - The new name to||1
+  Cmn39=assign when Save is pulsed\\\\   DIGITAL OUTPUTS:\\   Read_Again||1
+  Cmn40=||7- Pulsed after a save to trigger re-read on\\||<
+  Cmn41=||;connected modules\\   Show_Save_FB      - High when a||1
+  Cmn42=name is selected and save UI\\                       should be visible.
+  Cmn43=||1Low after save or cancel.\\\\   STRING OUTPUTS:\\   Current_Name$||1
+  Cmn44=||4- The existing name of the currently selected slot\\   Name$[1-
+  Cmn45=32]       - All name string outputs populated from file\\\\   ===================
+  Cmn46===================================================\\   PARAMETER\\
+  Cmn47=||3=====================================================================\\
+  Cmn48=\\   File_Name$  - NVRAM filename without path or extension\\||3
+  Cmn49=||>Default: Name_Changeable\\                 Special||1
+  Cmn50=value: "DM_Inputs" activates DM mode\\                 Do NOT include||1
+  Cmn51=\\NVRAM\\ path or .txt extension\\\\   ==========================================
+  Cmn52============================\\   TYPICAL TOUCHPANEL WORKFLOW\\||3
+  Cmn53======================================================================\\
+  Cmn54=\\   1. Pulse Read on startup or connect to Read_Again feedback\\
+  Cmn55=||32. User taps a name button -> pulse Name_toChange[n]\\   3. Current_Name$||1
+  Cmn56=populates the text entry field\\   4. Show_Save_FB goes high ->||1
+  Cmn57=show save/cancel buttons\\   5. User types new name -> New_Name$||1
+  Cmn58=updates\\   6. User taps Save -> pulse Save\\   7. Name is written||1
+  Cmn59=to file, Read_Again pulses to sync other modules\\   8. User taps||1
+  Cmn60=Cancel -> pulse Cancel to dismiss without saving\\
+[END]
+[BEGIN]
+  ObjTp=Symbol
+  Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,362,378,380,405,407,408,409,478,522,537,554,586,590,611,624,718,756,767,830,841,842,854,883,955,1032,1062,1079,1128,1129,1134,1140,1157,1158,1195,1199,1220,1221,1222,1223,1299,1348,1349,1439,1472,1473,1499,1746,1803,1975,2229,2354,2514,2523,2532,2706,2707,3235,3236,3427,3454,3567,3568,3601,3602,3708,3902,3903,3912,3918,3925,3926,4206,4207,
+  Exclusions_CDS=5
+  Inclusions_CDS=6,7
+  Name=TouchpanelText_r2
+  SmplCName=TouchpanelText_r2.usp
+  Code=1
+  SysRev5=4.000
+  SMWRev=3.00.00
+  InputCue1=[~UNUSED~]
+  InputSigType1=Digital
+  InputCue2=[~UNUSED~]
+  InputSigType2=Digital
+  InputCue3=Read
+  InputSigType3=Digital
+  InputCue4=Save
+  InputSigType4=Digital
+  InputCue5=Cancel
+  InputSigType5=Digital
+  InputCue6=Write_Example
+  InputSigType6=Digital
+  InputCue7=None
+  InputSigType7=Digital
+  InputCue8=Name_toChange[#]
+  InputSigType8=Digital
+  OutputCue1=[~UNUSED~]
+  OutputSigType1=Digital
+  OutputCue2=[~UNUSED~]
+  OutputSigType2=Digital
+  OutputCue3=Read_Again
+  OutputSigType3=Digital
+  OutputCue4=Show_Save_FB
+  OutputSigType4=Digital
+  InputList2Cue1=[~UNUSED~]
+  InputList2SigType1=Serial
+  InputList2Cue2=New_Name$
+  InputList2SigType2=Serial
+  OutputList2Cue1=[~UNUSED~]
+  OutputList2SigType1=Serial
+  OutputList2Cue2=Current_Name$
+  OutputList2SigType2=Serial
+  OutputList2Cue3=[~UNUSED~]
+  OutputList2SigType3=Serial
+  OutputList2Cue4=Name$[#]
+  OutputList2SigType4=Serial
+  ParamCue1=[Reference Name]
+  ParamCue2=File_Name$
+  ParamSigType2=String
+  MinVariableInputs=8
+  MaxVariableInputs=39
+  MinVariableInputsList2=2
+  MaxVariableInputsList2=2
+  MinVariableOutputs=4
+  MaxVariableOutputs=4
+  MinVariableOutputsList2=4
+  MaxVariableOutputsList2=35
+  MinVariableParams=1
+  MaxVariableParams=1
+  Expand=expand_separately
+  Expand2=expand_separately
+  ProgramTree=Logic
+  SymbolTree=46
+  UserSymTreeName=Touchpanel Mods
+  Hint=
+  PdfHelp=
+  HelpID= 
+  Render=4
+  Smpl-C=16
+  CompilerCode=-48
+  CompilerParamCode=27
+  CompilerParamCode5=14
+  NumFixedParams=1
+  Pp1=1
+  Pp2=2
+  MPp=2
+  NVStorage=10
+  ParamSigType1=String
+  SmplCInputCue1=o#
+  SmplCOutputCue1=i#
+  SmplCInputList2Cue1=an#
+  SmplCOutputList2Cue1=ai#
+  SPlus2CompiledName=S2_TouchpanelText_r2
+  SymJam=NonExclusive
+  FileName=TouchpanelText_r2.ush
+  SIMPLPlusModuleEncoding=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=1
+  Tp=1
+  NoS=False
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=2
+  Tp=1
+  HD=True
+  DV=Name_Changeable
+  NoS=False
+  VVS=0
+[END]

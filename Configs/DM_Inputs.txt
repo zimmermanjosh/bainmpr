@@ -1,0 +1,29 @@
+[NAMES]
+1-RoomA
+2-RoomB
+3-RoomC
+[INPUTS]
+1-RoomA~Floorbox
+2-RoomA~Wallplate
+3-RoomB~Floorbox
+4-RoomB~Wallplate
+5-RoomC~Floorbox
+6-RoomC~Wallplate   
+[OUTPUTS]
+1-RoomA~Codec 1
+2-RoomA~Codec 2
+3-RoomB~Codec 1
+4-RoomB~Codec 2
+5-RoomC~Codec 1
+6-RoomC~Codec 2
+7-Content A
+8-LCD A 1
+9-LCD A 2
+10-Content B
+11-LCD B 1
+12-LCD B 2
+13-Content C
+14-LCD C 1
+15-LCD C 2
+16-MOBILE CART
+[END]

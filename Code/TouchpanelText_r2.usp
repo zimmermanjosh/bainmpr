@@ -152,7 +152,7 @@ updated help file
 /*******************************************************************************************
   DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
 *******************************************************************************************/
-DIGITAL_INPUT _skip_, _skip_, Read, Save, Cancel, _skip_, None, Name_toChange[cName];
+DIGITAL_INPUT _skip_, _skip_, Read, Save, Cancel, Write_Example, None, Name_toChange[cName];
 STRING_INPUT _skip_, New_Name$[25]; 
 DIGITAL_OUTPUT _skip_, _skip_, Read_Again, Show_Save_FB; 
 STRING_OUTPUT  _skip_, Current_Name$;
@@ -358,7 +358,18 @@ Function Write_file()
 /*******************************************************************************************
   Event Handlers
 *******************************************************************************************/
-
+push Write_Example
+{
+    // Read first to populate sName$ from whatever is in the file
+    // (or if file doesn't exist yet, sName$ stays as-is)
+    call readfile_go();
+    delay(100);
+    
+    // Now write it back out
+    call Write_file();
+    delay(200);
+    pulse(10, Read_Again);
+}
 
 push save
 {

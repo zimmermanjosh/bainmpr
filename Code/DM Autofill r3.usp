@@ -22,13 +22,13 @@ Comments:
 
 #HELP_BEGIN
 
-   DM AutoFill - Reads a text file from NVRAM and populates DM Input/Output names and Room Names.
+   DM AutoFill - Reads a text file from NVRAM Program folder and populates DM Input/Output names and Room Names.
 
    FILE LOCATION:
    File is stored on processor NVRAM at:
    \\NVRAM\\<File_Name$>.txt
    Default filename parameter: DM_Inputs
-   Full path example: \\NVRAM\\DM_Inputs.txt
+   Full path example: \\NVRAM\\<someprogramID>\\DM_Inputs.txt
 
    FILE FORMAT:
    Sections must appear in this exact order: [NAMES], [INPUTS], [OUTPUTS], [END]
