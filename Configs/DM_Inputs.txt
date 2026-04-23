@@ -3,12 +3,12 @@
 2-RoomB
 3-RoomC
 [INPUTS]
-1-RoomA~Floorbox
-2-RoomA~Wallplate
-3-RoomB~Floorbox
-4-RoomB~Wallplate
-5-RoomC~Floorbox
-6-RoomC~Wallplate   
+1-RoomA~Wallplate
+2-RoomA~Floorbox
+3-RoomB~Wallplate
+4-RoomB~Floorbox
+5-RoomC~Wallplate
+6-RoomC~Floorbox   
 [OUTPUTS]
 1-RoomA~Codec 1
 2-RoomA~Codec 2

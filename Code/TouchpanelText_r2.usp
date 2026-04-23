@@ -360,12 +360,30 @@ Function Write_file()
 *******************************************************************************************/
 push Write_Example
 {
-    // Read first to populate sName$ from whatever is in the file
-    // (or if file doesn't exist yet, sName$ stays as-is)
-    call readfile_go();
-    delay(100);
+    integer n;
     
-    // Now write it back out
+    // Seed Prefix$ for standard mode since file may not exist yet
+    If(iDM = 0)
+    {
+        Prefix$ = "[START]\n";
+        
+        // Populate example names so Write_file() doesn't skip them all
+        sName$[1] = "Source One";
+        sName$[2] = "Source Two";
+        sName$[3] = "Source Three";
+        sName$[4] = "Source Four";
+        sName$[5] = "Source Five";
+    }
+    Else  // DM Mode
+    {
+        Prefix$ = "[INPUTS]\n";
+        
+        sName$[1]  = "Input One";
+        sName$[2]  = "Input Two";
+        sName$[17] = "Output One";
+        sName$[18] = "Output Two";
+    }
+
     call Write_file();
     delay(200);
     pulse(10, Read_Again);
