@@ -1,29 +1,27 @@
 [NAMES]
-1-RoomA
-2-RoomB
-3-RoomC
+RoomA
+RoomB
+RoomC
 [INPUTS]
-1-RoomA~Wallplate
-2-RoomA~Floorbox
-3-RoomB~Wallplate
-4-RoomB~Floorbox
-5-RoomC~Wallplate
-6-RoomC~Floorbox   
+1-RoomA FloorBox 
+2-RoomA Wallplate
+3-RoomB FloorBox 
+4-RoomB Wallplate
+5-RoomC FloorBox 
+6-RoomC Wallplate
 [OUTPUTS]
-1-RoomA~Codec 1
-2-RoomA~Codec 2
-3-RoomB~Codec 1
-4-RoomB~Codec 2
-5-RoomC~Codec 1
-6-RoomC~Codec 2
-7-Content A
-8-LCD A 1
-9-LCD A 2
-10-Content B
-11-LCD B 1
-12-LCD B 2
-13-Content C
-14-LCD C 1
-15-LCD C 2
-16-MOBILE CART
+1-RoomA Codec     
+2-RoomA Codec     
+3-RoomB Codec     
+4-RoomB Codec     
+5-RoomC Codec     
+6-RoomC Codec     
+8-Room A LCD      
+9-Room A LCD       
+11-Room B LCD     
+12-Room B LCD     
+13-Room C LCD     
+15-Room C LCD     
+16-MobileCart     
 [END]
+

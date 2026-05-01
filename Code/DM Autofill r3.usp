@@ -311,10 +311,15 @@ Push Fill
 
 Function Main()
 {
-    integer i;
-    
     WaitForInitializationComplete();
-    
-	cfileName$ = "\\NVRAM\\" + File_Name$ + ".txt";
-	
+
+    // give NVRAM time to fully mount on fresh code load
+    delay(300);
+
+    cfileName$ = "\\NVRAM\\" + File_Name$ + ".txt";
+    trace("Main: cfileName$ = %s\n", cfileName$);
+
+    read_file_go();
+    wait(100)   // bumped from 50 -- give parse time to finish on slow boot
+        Send_text();
 }

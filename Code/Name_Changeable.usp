@@ -1,0 +1,523 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+*******************************************************************************************/
+/*
+Dealer Name:  AVISPL
+System Name:  
+System Number: 
+Programmer:jbz
+Comments:
+  Updated:
+  - Added Write_Example digital input to seed and create NVRAM file on first run
+  - Fixed Write_file() missing _o_creat flag (file was never created if it didn't exist)
+  - Added trace statements to Write_file() for debugger visibility
+  - Write_Example now seeds real system names from touchpanel
+  - Added setarray(sName$) in Write_Example to clear dirty memory before seeding
+  - Main() now auto-reads file on startup if present
+  - If file is missing on startup, Status$ outputs an error message + file format example
+  - Added Status$ string output for touchpanel visibility
+  - Added full help file
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+
+// #DIGITAL_EXPAND 
+//#ANALOG_SERIAL_EXPAND InputsWithOutputs
+
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENCODING_ASCII
+
+#HELP_BEGIN
+
+  =====================================================================
+  MODULE: Name_Changeable
+  =====================================================================
+
+  DESCRIPTION:
+    Reads room and device names from an NVRAM text file on startup.
+    Allows runtime renaming via touchpanel and writes changes back
+    to the file. Designed to be source-configurable -- edit the
+    .txt file to add rooms or rename devices without recompiling.
+
+  =====================================================================
+  FILE LOCATION
+  =====================================================================
+
+    \\NVRAM\\<File_Name$>.txt
+    Default: \\NVRAM\\Name_Changeable.txt
+
+    The file is auto-read on startup. If the file is not found,
+    Status$ will output an error message and file format example.
+    Pulse Write_Example to create and seed the file with defaults.
+
+  =====================================================================
+  FILE FORMAT EXAMPLE
+  =====================================================================
+
+    [START]
+    1-Left Room
+    2-Mic 1 Left
+    3-Mic 2 Left
+    4-Mic 3 Right
+    5-Mic 4 Right
+    6-Spare
+    7-Right Room
+    8-Input 1
+    9-Input 2
+    10-Input 3
+    [END]
+
+  NOTES:
+    - [START] and [END] must each be on their own line
+    - Each entry must follow the format:  <number>-<name>
+    - Supports up to 32 names (slots 1-32)
+    - Max name length: 25 characters
+    - Lines without a number-dash prefix are ignored
+    - To add a new room: add a new numbered line in the file
+      or use the touchpanel UI and pulse Save
+
+  =====================================================================
+  ADDING A NEW ROOM
+  =====================================================================
+
+    1. On the processor, edit \\NVRAM\\Name_Changeable.txt
+    2. Add a new line:  8-New Room Name
+    3. Save the file
+    4. Pulse Read to reload -- new name appears on touchpanel
+    OR
+    1. On the touchpanel, select an empty slot via Name_toChange[n]
+    2. Type the new name into the text entry field (New_Name$)
+    3. Pulse Save -- file is updated and Read_Again pulses to sync
+
+  =====================================================================
+  SIGNALS
+  =====================================================================
+
+  DIGITAL INPUTS:
+    Read            - Pulse to read file from NVRAM and populate outputs
+    Save            - Pulse to save New_Name$ to selected slot and
+                      write back to NVRAM
+    Cancel          - Clears selection and hides save UI
+    Write_Example   - Seeds default names and creates the NVRAM file
+                      if it does not exist. Use on first install.
+    None            - Clears current selection without saving
+    Name_toChange[n]- Pulse index n (1-32) to select that name slot
+                      for editing. Outputs current name to Current_Name$
+                      and sets Show_Save_FB high.
+
+  STRING INPUT:
+    New_Name$[25]   - The new name to assign when Save is pulsed
+
+  DIGITAL OUTPUTS:
+    Read_Again      - Pulsed after a save to trigger re-read on
+                      connected modules
+    Show_Save_FB    - High when a name slot is selected and save UI
+                      should be visible. Low after save or cancel.
+
+  STRING OUTPUTS:
+    Current_Name$   - The existing name of the currently selected slot
+    Status$         - Displays file read status and error messages.
+                      Wire to a touchpanel text field for visibility.
+                      On missing file, outputs file format instructions.
+    Name$[1-32]     - All name string outputs populated from file
+
+  =====================================================================
+  PARAMETER
+  =====================================================================
+
+    File_Name$      - NVRAM filename without path or extension
+                      Default: Name_Changeable
+                      Do NOT include \\NVRAM\\ path or .txt extension
+                      Example: Name_Changeable
+                                -> writes to \\NVRAM\\Name_Changeable.txt
+
+  =====================================================================
+  TYPICAL TOUCHPANEL WORKFLOW
+  =====================================================================
+
+    1. On first install pulse Write_Example to create the file
+    2. File is auto-read on every processor boot
+    3. User taps a name button  -> pulse Name_toChange[n]
+    4. Current_Name$ populates the text entry field
+    5. Show_Save_FB goes high   -> show save/cancel buttons
+    6. User types new name      -> New_Name$ updates
+    7. User taps Save           -> pulse Save
+    8. Name is written to file, Read_Again pulses to sync modules
+    9. User taps Cancel         -> pulse Cancel to dismiss without saving
+
+  =====================================================================
+  TRACE / DEBUG
+  =====================================================================
+
+    Enable SIMPL+ debugger trace to see:
+    - Startup file path and mode
+    - File read success or failure
+    - Bytes written on each save
+    - Write_Example seed confirmation
+
+#HELP_END
+
+#DEFINE_CONSTANT	cfilebuf	3000
+#DEFINE_CONSTANT	cName		32
+
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT _skip_, _skip_, Read, Save, Cancel, Write_Example, _skip_, None, Name_toChange[cName];
+// ANALOG_INPUT 
+STRING_INPUT _skip_, New_Name$[25];
+// BUFFER_INPUT 
+
+DIGITAL_OUTPUT _skip_, _skip_, Read_Again, Show_Save_FB; 
+// ANALOG_OUTPUT 
+STRING_OUTPUT  _skip_, Current_Name$, Status$;
+STRING_OUTPUT _skip_, Name$[cName];
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+STRING_PARAMETER File_Name$[25];
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+
+#BEGIN_PARAMETER_PROPERTIES File_Name$
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   propDefaultValue = "Name_Changeable";
+#END_PARAMETER_PROPERTIES
+
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+STRING cFileName$[45];
+signed_integer nfilehandle;
+string sBuf[cfilebuf];
+string Prefix$[500];
+
+integer iselect, iDM;
+
+string trash$[1000], tempstring$[cfilebuf], tempstring1$[cfilebuf], tempstring2$[cfilebuf], tempEND$[cfilebuf];
+
+STRING sName$[cName][25];
+
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+
+Function read_Full_string()
+{
+	string temp1$[40], temp2$[40], temp3$[3500];
+	integer n,n2;
+	
+	setarray(Name$, "");
+	temp3$ = tempstring$;
+		
+	If(iDM = 1)
+	{
+		for(n = 1 to 100)
+		{
+			temp1$ = remove("\n", tempstring1$);
+			If(FIND("[OUTPUTS]", temp1$))
+				{break;}
+	        Else
+	        {
+	        	If(FIND("-", temp1$))
+				{
+		        	temp2$ = remove("-", temp1$);
+					temp2$ = left(temp2$, len(temp2$)-1);
+					temp1$ = left(temp1$, len(temp1$)-2);
+					
+					If(atoi(temp2$) < 17)
+					{						
+						Name$[atoi(temp2$)] = temp1$;
+						sName$[atoi(temp2$)] = temp1$;
+					}
+				}
+	        }		
+		}
+		
+		for(n = 1 to 100)
+		{
+			temp1$ = remove("\n", tempstring2$);
+			If(FIND("[END]", temp1$))
+				{break;}
+			Else
+			{
+				If(FIND("-", temp1$))
+				{
+					temp2$ = remove("-", temp1$);
+					temp2$ = left(temp2$, len(temp2$)-1);
+					temp1$ = left(temp1$, len(temp1$)-2);
+					
+					If(atoi(temp2$) < 17)
+					{
+						Name$[atoi(temp2$)+16] = temp1$;
+						sName$[atoi(temp2$)+16] = temp1$;
+					}
+				}	
+			}
+		}
+	}
+	Else
+	{
+		for(n = 1 to 300)
+		{
+			temp1$ = remove("\n", temp3$);
+			
+			If(temp1$ = "\n") 
+			{ 
+				trash$ = remove("\n", temp1$);
+			}
+			Else If(FIND("[END]", temp1$))
+			{
+				break;
+			}
+			Else If(find("-", temp1$))
+			{
+				temp2$ = remove("-", temp1$);
+				temp2$ = left(temp2$, len(temp2$)-1);
+				temp1$ = left(temp1$, len(temp1$)-2);
+				
+				Name$[atoi(temp2$)] = temp1$;
+				sName$[atoi(temp2$)] = temp1$;
+			}
+		}
+	}		
+}
+
+Function readfile_go()
+{          	            
+    startfileoperations();  
+    
+    	nfilehandle = fileopen(cFileName$, _o_rdonly | _o_text);
+     	
+		IF (nFileHandle >= 0) 
+   		{
+   			trace("readfile_go: file found, reading %s\n", cFileName$);
+   			Status$ = "OK: File loaded from " + cFileName$;
+
+			WHILE (FileRead(nFileHandle, sBuf, cfilebuf) > 0) 
+            {
+  				If(iDM = 1)
+  				{
+  					prefix$ = remove("[INPUTS]\n", sbuf);  				  				
+  					tempstring1$ = remove("[OUTPUTS]\n", sbuf);
+  					tempstring2$ = remove("[END]\n", sbuf);
+  					tempEND$ = remove("[END2]\n", sbuf);
+  				}
+  				Else
+  				{
+  					prefix$ = remove("[START]\n", sbuf);  				  				
+  					tempstring$ = remove("[END]\n", sbuf);
+  				}
+  			}  				
+       		FileClose(nFileHandle); 
+		}
+		Else
+		{
+			// File not found -- output instructions to Status$ and trace
+			trace("readfile_go: FILE NOT FOUND -- %s\n", cFileName$);
+			trace("readfile_go: Pulse Write_Example to create the file.\n");
+
+			Status$ = "ERROR: File not found: " + cFileName$ + chr(10) +
+			          "Pulse Write_Example to create the file." + chr(10) + chr(10) +
+			          "Expected file format:" + chr(10) +
+			          "[START]" + chr(10) +
+			          "1-Left Room" + chr(10) +
+			          "2-Mic 1 Left" + chr(10) +
+			          "3-Mic 2 Left" + chr(10) +
+			          "4-Mic 3 Right" + chr(10) +
+			          "5-Mic 4 Right" + chr(10) +
+			          "6-Spare" + chr(10) +
+			          "7-Right Room" + chr(10) +
+			          "8-Input 1" + chr(10) +
+			          "[END]";
+		}
+              	       
+    endfileoperations();
+    
+    Read_Full_string();
+}
+
+Function Write_file()
+{
+    string cfilewrite[cfilebuf];
+    integer n, nBytesWritten;
+    
+    cfilewrite = Prefix$;
+    
+    If(iDM = 1)
+    {
+    	for(n = 1 to 16)
+	    {
+			If(Len(sName$[n]) > 0)
+			{
+				cfilewrite = cfilewrite + itoa(n) + "-" + sName$[n] + "\n";
+	    	}
+	    }
+	    cfilewrite = cfilewrite + "[OUTPUTS]\n";
+	    for(n = 17 to 32)
+	    {
+			If(Len(sName$[n]) > 0)
+			{
+				cfilewrite = cfilewrite + itoa(n-16) + "-" + sName$[n] + "\n";
+	    	}
+	    }
+	    cfilewrite = cfilewrite + "[END]\n\n" + tempEND$ + "\n";
+    }
+    Else
+    {
+	    for(n = 1 to cName)
+	    {
+			If(Len(sName$[n]) > 0)
+			{
+				cfilewrite = cfilewrite + itoa(n) + "-" + sName$[n] + "\n";
+	    	}
+	    }
+	    cfilewrite = cfilewrite + "[END]\n\n";
+	}    
+        
+    startfileoperations();  
+
+    	// _o_creat -- creates file if it does not exist
+     	nfilehandle = fileopen(cfileName$, _o_wronly | _o_text | _o_trunc | _o_creat);
+
+     	trace("Write_file: handle=%d  path=%s\n", nfilehandle, cfileName$);
+     	
+        IF (nFileHandle >= 0) 
+   		{
+   			nBytesWritten = FileWrite(nFileHandle, cfilewrite, len(cfilewrite));
+   			trace("Write_file: wrote %d bytes\n", nBytesWritten);
+   			Status$ = "OK: File saved -- " + itoa(nBytesWritten) + " bytes written to " + cFileName$;
+       		FileClose(nFileHandle);
+		}
+		Else
+		{
+			trace("Write_file: ERROR - failed to open file! Check NVRAM path.\n");
+			Status$ = "ERROR: Could not write file -- " + cFileName$ + " -- check NVRAM path";
+		}
+              	       
+    endfileoperations();
+}
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+
+push Write_Example
+{
+    // clear any dirty memory before seeding
+    setarray(sName$, "");
+
+    trace("Write_Example: seeding real system names and writing file\n");
+
+    Prefix$ = "[START]\n";
+
+    // -- Real system names from touchpanel --
+    // Left column (room/mic names)
+    sName$[1]  = "leftrm";
+    sName$[2]  = "mic1";
+    sName$[3]  = "mic2";
+    sName$[4]  = "m3";
+    sName$[5]  = "m4";
+    sName$[6]  = "spr";
+    sName$[7]  = "right";
+
+    // Center column (input names)
+    sName$[8]  = "in1";
+    sName$[9]  = "in2";
+    sName$[10] = "in3";
+    sName$[11] = "in4";
+    sName$[12] = "in5";
+    sName$[13] = "in6";
+    sName$[14] = "in7";
+    sName$[15] = "in8";
+    sName$[16] = "in9";
+    sName$[17] = "in10";
+
+    // Right column (output names)
+    sName$[18] = "out2";
+    sName$[19] = "out3";
+    sName$[20] = "out5";
+    sName$[21] = "ut6";
+
+    call Write_file();
+    delay(200);
+    pulse(10, Read_Again);
+}
+
+push save
+{
+    If(iselect > 0)
+    {
+	    sname$[iselect] = New_Name$;
+	    name$[iselect] = New_Name$;
+
+	    Show_Save_FB = 0;
+	    call Write_file();
+	    delay(200);
+	    Show_Save_FB = 0;
+	    pulse(10, Read_Again);
+	}
+}
+
+push read
+{
+	call readfile_go();
+}
+
+push Name_toChange
+{
+	iselect = getlastmodifiedarrayindex();
+	Show_Save_FB = 1;
+	Current_Name$ = sname$[iselect];
+}
+
+push Cancel
+{
+     Show_Save_FB = 0;
+     iselect = 0;
+}
+
+push None
+{
+     iselect = 0;
+}
+
+change New_Name$
+{
+	
+}
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+
+Function Main()
+{
+    integer i,n;
+    iDM = 0;
+    
+    WaitForInitializationComplete();
+    //added time for memory to come on line and intailize fully
+    delay(300);
+    
+    if(File_Name$ = "DM_Inputs") iDM = 1;
+    
+    cfileName$ = "\\NVRAM\\" + File_Name$ + ".txt";
+
+    trace("Main: cfileName$ = %s  iDM = %d\n", cfileName$, iDM);
+
+    // auto-read file on startup -- if file missing, Status$ will output instructions
+    call readfile_go();
+}

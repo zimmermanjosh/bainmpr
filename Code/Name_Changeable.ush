@@ -1,0 +1,195 @@
+[BEGIN]
+  Version=1
+[END]
+[BEGIN]
+  ObjTp=FSgntr
+  Sgntr=UserSPlus
+  RelVrs=1
+  IntStrVrs=1
+  SPlusVrs=4.06.00
+  CrossCplrVrs=1.3
+[END]
+[BEGIN]
+  ObjTp=Hd
+  Cmn1=||2=====================================================================\\
+  Cmn2=||2MODULE: Name_Changeable\\  ====================================================
+  Cmn3==================\\\\  DESCRIPTION:\\    Reads room and device names||1
+  Cmn4=from an NVRAM text file on startup.\\    Allows runtime renaming||1
+  Cmn5=via touchpanel and writes changes back\\    to the file. Designed||1
+  Cmn6=to be source-configurable -- edit the\\    .txt file to add rooms||1
+  Cmn7=or rename devices without recompiling.\\\\  =====================================
+  Cmn8=================================\\  FILE LOCATION\\  ============================
+  Cmn9==========================================\\\\    \\NVRAM\\<File_Name$>.
+  Cmn10=txt\\    Default: \\NVRAM\\Name_Changeable.txt\\\\    The file is||1
+  Cmn11=auto-read on startup. If the file is not found,\\    Status$ will||1
+  Cmn12=output an error message and file format example.\\    Pulse Write_Example||1
+  Cmn13=to create and seed the file with defaults.\\\\  =================================
+  Cmn14=====================================\\  FILE FORMAT EXAMPLE\\  ==================
+  Cmn15====================================================\\\\    [START]\\
+  Cmn16=||41-Left Room\\    2-Mic 1 Left\\    3-Mic 2 Left\\    4-Mic 3||1
+  Cmn17=Right\\    5-Mic 4 Right\\    6-Spare\\    7-Right Room\\    8-Input||1
+  Cmn18=1\\    9-Input 2\\    10-Input 3\\    [END]\\\\  NOTES:\\    - [START]||1
+  Cmn19=and [END] must each be on their own line\\    - Each entry must||1
+  Cmn20=follow the format:  <number>-<name>\\    - Supports up to 32 names||1
+  Cmn21=(slots 1-32)\\    - Max name length: 25 characters\\    - Lines||1
+  Cmn22=without a number-dash prefix are ignored\\    - To add a new room:
+  Cmn23=||1add a new numbered line in the file\\      or use the touchpanel||1
+  Cmn24=UI and pulse Save\\\\  ==========================================================
+  Cmn25============\\  ADDING A NEW ROOM\\  =============================================
+  Cmn26=========================\\\\    1. On the processor, edit \\NVRAM\\Name_Changeabl
+  Cmn27=e.txt\\    2. Add a new line:  8-New Room Name\\    3. Save the||1
+  Cmn28=file\\    4. Pulse Read to reload -- new name appears on touchpanel\\
+  Cmn29=||4OR\\    1. On the touchpanel, select an empty slot via Name_toChange[n]\\
+  Cmn30=||42. Type the new name into the text entry field (New_Name$)\\
+  Cmn31=||43. Pulse Save -- file is updated and Read_Again pulses to sync\\
+  Cmn32=\\  =====================================================================\\
+  Cmn33=||2SIGNALS\\  ====================================================================
+  Cmn34==\\\\  DIGITAL INPUTS:\\    Read            - Pulse to read file||1
+  Cmn35=from NVRAM and populate outputs\\    Save            - Pulse to||1
+  Cmn36=save New_Name$ to selected slot and\\                      write||1
+  Cmn37=back to NVRAM\\    Cancel          - Clears selection and hides||1
+  Cmn38=save UI\\    Write_Example   - Seeds default names and creates the||1
+  Cmn39=NVRAM file\\                      if it does not exist. Use on first||1
+  Cmn40=install.\\    None            - Clears current selection without||1
+  Cmn41=saving\\    Name_toChange[n]- Pulse index n (1-32) to select that||1
+  Cmn42=name slot\\                      for editing. Outputs current name||1
+  Cmn43=to Current_Name$\\                      and sets Show_Save_FB high.
+  Cmn44=\\\\  STRING INPUT:\\    New_Name$[25]   - The new name to assign||1
+  Cmn45=when Save is pulsed\\\\  DIGITAL OUTPUTS:\\    Read_Again      -
+  Cmn46=||1Pulsed after a save to trigger re-read on\\||D
+  Cmn47=||2connected modules\\    Show_Save_FB    - High when a name slot||1
+  Cmn48=is selected and save UI\\                      should be visible.
+  Cmn49=||1Low after save or cancel.\\\\  STRING OUTPUTS:\\    Current_Name$||1
+  Cmn50=||2- The existing name of the currently selected slot\\    Status$||1
+  Cmn51=||8- Displays file read status and error messages.\\||7
+  Cmn52=||?Wire to a touchpanel text field for visibility.\\
+  Cmn53=||FOn missing file, outputs file format instructions.
+  Cmn54=\\    Name$[1-32]     - All name string outputs populated from file\\
+  Cmn55=\\  =====================================================================\\
+  Cmn56=||2PARAMETER\\  ==================================================================
+  Cmn57====\\\\    File_Name$      - NVRAM filename without path or extension\\
+  Cmn58=||FDefault: Name_Changeable\\||@
+  Cmn59=||6Do NOT include \\NVRAM\\ path or .txt extension\\||9
+  Cmn60=||=Example: Name_Changeable\\||I
+  Cmn61=||7-> writes to \\NVRAM\\Name_Changeable.txt\\\\  ===========================
+  Cmn62===========================================\\  TYPICAL TOUCHPANEL||1
+  Cmn63=WORKFLOW\\  =====================================================================
+  Cmn64=\\\\    1. On first install pulse Write_Example to create the file\\
+  Cmn65=||42. File is auto-read on every processor boot\\    3. User taps||1
+  Cmn66=a name button  -> pulse Name_toChange[n]\\    4. Current_Name$ populates||1
+  Cmn67=the text entry field\\    5. Show_Save_FB goes high   -> show save/cancel||1
+  Cmn68=buttons\\    6. User types new name      -> New_Name$ updates\\||1
+  Cmn69=||37. User taps Save           -> pulse Save\\    8. Name is written||1
+  Cmn70=to file, Read_Again pulses to sync modules\\    9. User taps Cancel||1
+  Cmn71=||8-> pulse Cancel to dismiss without saving\\\\  ==========================
+  Cmn72============================================\\  TRACE / DEBUG\\||2
+  Cmn73======================================================================\\
+  Cmn74=\\    Enable SIMPL+ debugger trace to see:\\    - Startup file path||1
+  Cmn75=and mode\\    - File read success or failure\\    - Bytes written||1
+  Cmn76=on each save\\    - Write_Example seed confirmation\\
+[END]
+[BEGIN]
+  ObjTp=Symbol
+  Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,362,378,380,405,407,408,409,478,522,537,554,586,590,611,624,718,756,767,830,841,842,854,883,955,1032,1062,1079,1128,1129,1134,1140,1157,1158,1195,1199,1220,1221,1222,1223,1299,1348,1349,1439,1472,1473,1499,1746,1803,1975,2229,2354,2514,2523,2532,2706,2707,3235,3236,3427,3454,3567,3568,3601,3602,3708,3902,3903,3912,3918,3925,3926,4206,4207,
+  Exclusions_CDS=5
+  Inclusions_CDS=6,7
+  Name=Name_Changeable
+  SmplCName=Name_Changeable.usp
+  Code=1
+  SysRev5=4.000
+  SMWRev=3.00.00
+  InputCue1=[~UNUSED~]
+  InputSigType1=Digital
+  InputCue2=[~UNUSED~]
+  InputSigType2=Digital
+  InputCue3=Read
+  InputSigType3=Digital
+  InputCue4=Save
+  InputSigType4=Digital
+  InputCue5=Cancel
+  InputSigType5=Digital
+  InputCue6=Write_Example
+  InputSigType6=Digital
+  InputCue7=[~UNUSED~]
+  InputSigType7=Digital
+  InputCue8=None
+  InputSigType8=Digital
+  InputCue9=Name_toChange[#]
+  InputSigType9=Digital
+  OutputCue1=[~UNUSED~]
+  OutputSigType1=Digital
+  OutputCue2=[~UNUSED~]
+  OutputSigType2=Digital
+  OutputCue3=Read_Again
+  OutputSigType3=Digital
+  OutputCue4=Show_Save_FB
+  OutputSigType4=Digital
+  InputList2Cue1=[~UNUSED~]
+  InputList2SigType1=Serial
+  InputList2Cue2=New_Name$
+  InputList2SigType2=Serial
+  OutputList2Cue1=[~UNUSED~]
+  OutputList2SigType1=Serial
+  OutputList2Cue2=Current_Name$
+  OutputList2SigType2=Serial
+  OutputList2Cue3=Status$
+  OutputList2SigType3=Serial
+  OutputList2Cue4=[~UNUSED~]
+  OutputList2SigType4=Serial
+  OutputList2Cue5=Name$[#]
+  OutputList2SigType5=Serial
+  ParamCue1=[Reference Name]
+  ParamCue2=File_Name$
+  ParamSigType2=String
+  MinVariableInputs=9
+  MaxVariableInputs=40
+  MinVariableInputsList2=2
+  MaxVariableInputsList2=2
+  MinVariableOutputs=4
+  MaxVariableOutputs=4
+  MinVariableOutputsList2=5
+  MaxVariableOutputsList2=36
+  MinVariableParams=1
+  MaxVariableParams=1
+  Expand=expand_separately
+  Expand2=expand_separately
+  ProgramTree=Logic
+  SymbolTree=32
+  Hint=
+  PdfHelp=
+  HelpID= 
+  Render=4
+  Smpl-C=16
+  CompilerCode=-48
+  CompilerParamCode=27
+  CompilerParamCode5=14
+  NumFixedParams=1
+  Pp1=1
+  Pp2=2
+  MPp=2
+  NVStorage=10
+  ParamSigType1=String
+  SmplCInputCue1=o#
+  SmplCOutputCue1=i#
+  SmplCInputList2Cue1=an#
+  SmplCOutputList2Cue1=ai#
+  SPlus2CompiledName=S2_Name_Changeable
+  SymJam=NonExclusive
+  FileName=Name_Changeable.ush
+  SIMPLPlusModuleEncoding=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=1
+  Tp=1
+  NoS=False
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=2
+  Tp=1
+  HD=True
+  DV=Name_Changeable
+  NoS=False
+  VVS=0
+[END]
