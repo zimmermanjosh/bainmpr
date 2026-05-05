@@ -10,18 +10,12 @@ RoomC
 5-RoomC FloorBox 
 6-RoomC Wallplate
 [OUTPUTS]
-1-RoomA Codec     
-2-RoomA Codec     
-3-RoomB Codec     
-4-RoomB Codec     
-5-RoomC Codec     
-6-RoomC Codec     
-8-Room A LCD      
-9-Room A LCD       
-11-Room B LCD     
-12-Room B LCD     
-13-Room C LCD     
-15-Room C LCD     
-16-MobileCart     
+1-Room A LCD
+2-Room A LCD
+3-Room B LCD 
+4-Room B LCD 
+5-Room C LCD
+6-Room C LCD
+7-MobileCart
 [END]
 
