@@ -3,19 +3,28 @@ RoomA
 RoomB
 RoomC
 [INPUTS]
-1-RoomA FloorBox 
-2-RoomA Wallplate
-3-RoomB FloorBox 
-4-RoomB Wallplate
-5-RoomC FloorBox 
-6-RoomC Wallplate
+1-RoomA Wallplate 
+2-RoomA FloorBox
+3-codecA 1 RoomA
+4-codecA 2 RoomA
+5-RoomB Wallplate
+6-RoomB FloorBox
+7-codecB 1 RoomB
+8-codecB 2 RoomB
+9-RoomC Wallplate 
+10-RoomC FloorBox
+11-codecC 1 RoomC
+12-codecC 2 RoomC
 [OUTPUTS]
-1-Room A LCD
+1-Room A Content
 2-Room A LCD
-3-Room B LCD 
-4-Room B LCD 
-5-Room C LCD
-6-Room C LCD
-7-MobileCart
+3-Room A LCD
+4-Room B Content
+5-Room B LCD 
+6-Room B LCD 
+7-Room C Content
+8-Room C LCD
+9-Room C LCD
+10-MobileCart
 [END]
 
