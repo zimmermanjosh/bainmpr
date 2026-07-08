@@ -1,4 +1,4 @@
-Crosspoint listing for C:\CodeStoreJBZ\Customers\B\Bain & Co\Dallas TX\mpr\Code\Bain_200I-25-84927_Dallas_MPR_CP4n_PSlot01.SMW
+Crosspoint listing for C:\CodeStoreJBZ\B\bainmpr\Code\Bain_200I-25-84927_Dallas_MPR_CP4n_PSlot01.SMW
 
 Note:  Crosspoint symbols with EquipID or ControlID set to 0d are not routeable.
 
