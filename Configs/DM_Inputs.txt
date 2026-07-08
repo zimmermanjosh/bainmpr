@@ -1,30 +1,30 @@
 [NAMES]
-RoomA
-RoomB
-RoomC
+Maverick
+Pegasus
+Reunion
 [INPUTS]
-1-RoomA Wallplate 
-2-RoomA FloorBox
-3-codecA 1 RoomA
-4-codecA 2 RoomA
-5-RoomB Wallplate
-6-RoomB FloorBox
-7-codecB 1 RoomB
-8-codecB 2 RoomB
-9-RoomC Wallplate 
-10-RoomC FloorBox
-11-codecC 1 RoomC
-12-codecC 2 RoomC
+1-Maverick Wallplate 
+2-Maverick FloorBox
+3-codecA 1 Maverick
+4-codecA 2 Maverick
+5-Pegasus Wallplate
+6-Pegasus FloorBox
+7-codecB 1 Pegasus
+8-codecB 2 Pegasus
+9-Reunion Wallplate 
+10-Reunion FloorBox
+11-codecC 1 Reunion
+12-codecC 2 Reunion
 [OUTPUTS]
-1-Room A Content
-2-Room A LCD
-3-Room A LCD
-4-Room B Content
-5-Room B LCD 
-6-Room B LCD 
-7-Room C Content
-8-Room C LCD
-9-Room C LCD
+1-Maverick Content
+2-Maverick LCD
+3-Maverick LCD
+4-Pegasus Content
+5-Pegasus LCD 
+6-Pegasus LCD 
+7-Reunion Content
+8-Reunion LCD
+9-Reunion LCD
 10-MobileCart
 [END]
 
