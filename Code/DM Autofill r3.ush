@@ -39,7 +39,9 @@
   Cmn26=(default: DM_Inputs)\\                 Do NOT include path or .txt||1
   Cmn27=extension\\\\   NOTES:\\   - File must exist on NVRAM before pulsing||1
   Cmn28=Fill\\   - Pulse Fill after file is loaded to refresh outputs\\||1
-  Cmn29=||2- [END] must be followed by a real newline, not literal \n\\
+  Cmn29=||2- [END] must be followed by a real newline, not literal \n\\||2
+  Cmn30=||1- File should use Unix (LF) line endings. Windows (CRLF) endings||1
+  Cmn31=are now\\     stripped automatically before parsing.\\
 [END]
 [BEGIN]
   ObjTp=Symbol
@@ -186,4 +188,8 @@
   DV=DM_Inputs
   NoS=False
   VVS=0
+[END]
+[BEGIN]
+ObjTp=Status
+HeaderCompatible=False
 [END]

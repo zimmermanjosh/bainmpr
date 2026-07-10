@@ -9,6 +9,14 @@ Programmer:JBZ
 Comments:
 - Copied previous module, fixed broken paths and parsing 
 - updated help and example files
+- FIXED: sOutput$ array bumped from [60] to [65] to support all 64 outputs
+- FIXED: bounds check changed from < 60 to <= 64 to match DM_Output[64]
+- FIXED: remove("[END]\n") changed to remove("[END]") -- if the .txt file has no
+         trailing newline after [END], the old delimiter never matched and
+         tempstring2$ came back empty (length 0), so iOutputs stayed 0
+- FIXED: TrimLineEnd uses STRING_FUNCTION so it can return a value
+- FIXED: line-end trim handles both \r\n (Windows) and \n (Unix) files
+- ADDED: trace debug for iOutputs, iInputs, and tempstring lengths
 */
 
 /*******************************************************************************************
@@ -86,7 +94,8 @@ Comments:
    NOTES:
    - File must exist on NVRAM before pulsing Fill
    - Pulse Fill after file is loaded to refresh outputs
-   - [END] must be followed by a real newline, not literal \n
+   - [END] does NOT need a trailing newline (module handles both cases)
+   - Both Windows (CRLF) and Unix (LF) line endings are supported
 
 #HELP_END
 
@@ -102,7 +111,6 @@ STRING_OUTPUT _skip_, RM_Name[3],DM_Input[cinput],DM_Output[64];
 /*******************************************************************************************
   Parameters
 *******************************************************************************************/
-// INTEGER_PARAMETER
 STRING_PARAMETER File_Name$[25];
 
 /*******************************************************************************************
@@ -110,10 +118,9 @@ STRING_PARAMETER File_Name$[25];
 *******************************************************************************************/
 
 #BEGIN_PARAMETER_PROPERTIES File_Name$
-   propValidUnits = unitString;  //unitDecimal|unitHex|unitPercent|unitCharacter|unitTime|unitTicks;
-   propDefaultUnit = unitString;  //unitDecimal, unitHex, unitPercent, unitCharacter, unitTime or unitTicks;
-   propDefaultValue = "DM_Inputs";  // or, propDefaultValue = "";
-   // propList = { "value" , "label" } , { "value" , "label" };
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   propDefaultValue = "DM_Inputs";
 #END_PARAMETER_PROPERTIES
 
 /*******************************************************************************************
@@ -126,7 +133,8 @@ signed_integer nfilehandle;
 string sBuf[cfilebuf], sfilename$[35];
 string trash$[200], tempstring1$[cfilebuf],tempstring2$[cfilebuf],tempstring3$[cfilebuf];
 string sInput$[cinput][60];
-string sOutput$[60][60];
+// FIX: was [60][60] -- indices 0-59 only, silently dropped outputs 60-64
+string sOutput$[65][60];
 string sNames$[5][60];
 integer iInputs, iOutputs, iNames;
 
@@ -134,12 +142,38 @@ integer iInputs, iOutputs, iNames;
   Functions
 *******************************************************************************************/
 
+// TrimLineEnd: strips the line ending from a string returned by remove("\n", ...)
+// Must be STRING_FUNCTION (not Function) so the return value can be assigned.
+// After remove("\n", src), the returned string still carries the "\n" at the end.
+// If the file used Windows CRLF there will also be a "\r" just before the "\n".
+// We check: is the char before \n a \r? If yes -> strip 2, else strip 1.
+STRING_FUNCTION TrimLineEnd(string sLine$)
+{
+    string sResult$[100];
+    sResult$ = sLine$;
+
+    if(len(sResult$) >= 2)
+    {
+        if(find("\r", sResult$) = (len(sResult$) - 1))
+            sResult$ = left(sResult$, len(sResult$) - 2);  // CRLF -> strip \r\n
+        else
+            sResult$ = left(sResult$, len(sResult$) - 1);  // LF only -> strip \n
+    }
+    else
+    {
+        sResult$ = "";
+    }
+
+    return(sResult$);
+}
+
 Function read_string()
 {
 	string temp1$[100], temp2$[5];
 	integer n,t;
 	iNames = 1;
-	
+
+	// --- Parse INPUTS from tempstring1$ ---
 	for(n = 1 to 100)
 	{
 		temp1$ = remove("\n", tempstring1$);
@@ -151,22 +185,24 @@ Function read_string()
 			{
 	        	temp2$ = remove("-", temp1$);
 				temp2$ = left(temp2$, len(temp2$)-1);
-				
+
 				If(FIND(".", temp2$))
 				{
 					temp2$ = remove(".", temp2$);
 					temp2$ = left(temp2$, len(temp2$)-1);
 				}
-				
+
 	            If(FIND("=", temp1$))
 				{
 					temp1$ = remove("=", temp1$);
 					temp1$ = left(temp1$, len(temp1$)-1);
 				}
 				Else
-					temp1$ = left(temp1$, len(temp1$)-2);
-				
-				If(atoi(temp2$) < 60)
+				{
+					temp1$ = TrimLineEnd(temp1$);
+				}
+
+				If(atoi(temp2$) <= cinput)
 				{
 					sinput$[atoi(temp2$)] = temp1$;
 					iInputs = max(iInputs, atoi(temp2$));
@@ -174,7 +210,8 @@ Function read_string()
 			}
         }		
 	}
-	
+
+	// --- Parse OUTPUTS from tempstring2$ ---
 	for(n = 1 to 100)
 	{
 		temp1$ = remove("\n", tempstring2$);
@@ -186,22 +223,25 @@ Function read_string()
 			{
 				temp2$ = remove("-", temp1$);
 				temp2$ = left(temp2$, len(temp2$)-1);
-				
+
 				If(FIND(".", temp2$))
 				{
 					temp2$ = remove(".", temp2$);
 					temp2$ = left(temp2$, len(temp2$)-1);
 				}
-				
+
 				If(FIND("=", temp1$))
 				{
 					temp1$ = remove("=", temp1$);
 					temp1$ = left(temp1$, len(temp1$)-1);
 				}
 				Else
-					temp1$ = left(temp1$, len(temp1$)-2);
-				
-				If(atoi(temp2$) < 60)
+				{
+					temp1$ = TrimLineEnd(temp1$);
+				}
+
+				// FIX: was < 60 -- silently dropped outputs numbered 60-64
+				If(atoi(temp2$) <= 64)
 				{
 					soutput$[atoi(temp2$)] = temp1$;
 					iOutputs = max(iOutputs,atoi(temp2$));
@@ -209,46 +249,57 @@ Function read_string()
 			}	
 		}
 	}
-	
+
+	// --- Parse NAMES from tempstring3$ ---
 	for(n = 1 to 3)
 	{
 		temp1$ = remove("\n", tempstring3$);
 		If(FIND("[INPUTS]", temp1$))
 			{break;}
 		Else
-		{			
-			temp1$ = left(temp1$, len(temp1$)-2);
-			
-			
+		{
+			temp1$ = TrimLineEnd(temp1$);
 			snames$[n] = temp1$;
-			
 			iNames = n;		
 		}
-	}		
+	}
 
+	trace("read_string: iInputs=%d  iOutputs=%d  iNames=%d\n", iInputs, iOutputs, iNames);
 }
 
 Function read_file_go()
 {
     integer n;
-    //trace("read");
           	        
     startfileoperations();  
     
-     	nfilehandle = fileopen(cFileName$, _o_rdonly | _o_text);
+	nfilehandle = fileopen(cFileName$, _o_rdonly | _o_text);
      	
-        IF (nFileHandle >= 0) 
-   		{
-			WHILE (FileRead(nFileHandle, sBuf, cfilebuf) > 0) 
-            {
-  				trash$ = remove("[NAMES]\n", sbuf);
-  				tempstring3$ = remove("[INPUTS]\n", sbuf);
-  				tempstring1$ = remove("[OUTPUTS]\n", sbuf);
-  				tempstring2$ = remove("[END]\n", sbuf);
-  			} 			
+    IF (nFileHandle >= 0) 
+	{
+		WHILE (FileRead(nFileHandle, sBuf, cfilebuf) > 0) 
+		{
+			trash$       = remove("[NAMES]\n",   sbuf);
+			tempstring3$ = remove("[INPUTS]\n",  sbuf);   // NAMES section content
+			tempstring1$ = remove("[OUTPUTS]\n", sbuf);   // INPUTS section content
+
+			// FIX: was remove("[END]\n", sbuf)
+			// If the .txt file has no trailing newline after [END] (very common),
+			// the "\n" suffix never matched and tempstring2$ came back empty (len=0).
+			// Dropping the \n means it matches whether or not a newline follows [END].
+			tempstring2$ = remove("[END]",       sbuf);   // OUTPUTS section content
+
+			trace("read_file_go: len(tempstring3$)=%d  len(tempstring1$)=%d  len(tempstring2$)=%d\n",
+				len(tempstring3$), len(tempstring1$), len(tempstring2$));
+		}
    				
-       		FileClose ( nFileHandle ); 
-		}             	       
+		FileClose(nFileHandle); 
+	}
+	Else
+	{
+		trace("read_file_go: ERROR - file not found: %s  handle=%d\n", cFileName$, nFileHandle);
+	}
+
     endfileoperations(); 
       				
     read_string();
@@ -266,12 +317,12 @@ Function Send_text()
 			tempr2$ = sinput$[n];
 			tempr1$ = remove("~", tempr2$);
 			tempr1$ = left(tempr1$,len(tempr1$)-1);
-			
 			Dm_input[n] = tempr1$ + "\r" + tempr2$;		
 		}
 		Else
 			DM_Input[n] = sInput$[n];
 	}
+
 	for(n=1 to iOutputs)
 	{
 		If(find("~", soutput$[n]))
@@ -279,17 +330,18 @@ Function Send_text()
 			tempr2$ = soutput$[n];
 			tempr1$ = remove("~", tempr2$);
 			tempr1$ = left(tempr1$,len(tempr1$)-1);
-			
 			Dm_output[n] = tempr1$ + "\r" + tempr2$;		
 		}
 		Else
 			DM_Output[n] = sOutput$[n];
 	}
+
 	for(n=1 to iNames)
 	{
 		RM_Name[n] = sNames$[n];
 	}
 
+	trace("Send_text: pushed %d inputs, %d outputs, %d names\n", iInputs, iOutputs, iNames);
 }
 
 /*******************************************************************************************
@@ -298,9 +350,7 @@ Function Send_text()
   
 Push Fill
 {
-		
 	read_file_go();
-
 	wait(50)
 		Send_text();
 }

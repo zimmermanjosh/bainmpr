@@ -32,61 +32,34 @@
   Cmn19=and [END] must each be on their own line\\    - Each entry must||1
   Cmn20=follow the format:  <number>-<name>\\    - Supports up to 32 names||1
   Cmn21=(slots 1-32)\\    - Max name length: 25 characters\\    - Lines||1
-  Cmn22=without a number-dash prefix are ignored\\    - To add a new room:
-  Cmn23=||1add a new numbered line in the file\\      or use the touchpanel||1
-  Cmn24=UI and pulse Save\\\\  ==========================================================
-  Cmn25============\\  ADDING A NEW ROOM\\  =============================================
-  Cmn26=========================\\\\    1. On the processor, edit \\NVRAM\\Name_Changeabl
-  Cmn27=e.txt\\    2. Add a new line:  8-New Room Name\\    3. Save the||1
-  Cmn28=file\\    4. Pulse Read to reload -- new name appears on touchpanel\\
-  Cmn29=||4OR\\    1. On the touchpanel, select an empty slot via Name_toChange[n]\\
-  Cmn30=||42. Type the new name into the text entry field (New_Name$)\\
-  Cmn31=||43. Pulse Save -- file is updated and Read_Again pulses to sync\\
-  Cmn32=\\  =====================================================================\\
-  Cmn33=||2SIGNALS\\  ====================================================================
-  Cmn34==\\\\  DIGITAL INPUTS:\\    Read            - Pulse to read file||1
-  Cmn35=from NVRAM and populate outputs\\    Save            - Pulse to||1
-  Cmn36=save New_Name$ to selected slot and\\                      write||1
-  Cmn37=back to NVRAM\\    Cancel          - Clears selection and hides||1
-  Cmn38=save UI\\    Write_Example   - Seeds default names and creates the||1
-  Cmn39=NVRAM file\\                      if it does not exist. Use on first||1
-  Cmn40=install.\\    None            - Clears current selection without||1
-  Cmn41=saving\\    Name_toChange[n]- Pulse index n (1-32) to select that||1
-  Cmn42=name slot\\                      for editing. Outputs current name||1
-  Cmn43=to Current_Name$\\                      and sets Show_Save_FB high.
-  Cmn44=\\\\  STRING INPUT:\\    New_Name$[25]   - The new name to assign||1
-  Cmn45=when Save is pulsed\\\\  DIGITAL OUTPUTS:\\    Read_Again      -
-  Cmn46=||1Pulsed after a save to trigger re-read on\\||D
-  Cmn47=||2connected modules\\    Show_Save_FB    - High when a name slot||1
-  Cmn48=is selected and save UI\\                      should be visible.
-  Cmn49=||1Low after save or cancel.\\\\  STRING OUTPUTS:\\    Current_Name$||1
-  Cmn50=||2- The existing name of the currently selected slot\\    Status$||1
-  Cmn51=||8- Displays file read status and error messages.\\||7
-  Cmn52=||?Wire to a touchpanel text field for visibility.\\
-  Cmn53=||FOn missing file, outputs file format instructions.
-  Cmn54=\\    Name$[1-32]     - All name string outputs populated from file\\
-  Cmn55=\\  =====================================================================\\
-  Cmn56=||2PARAMETER\\  ==================================================================
-  Cmn57====\\\\    File_Name$      - NVRAM filename without path or extension\\
-  Cmn58=||FDefault: Name_Changeable\\||@
-  Cmn59=||6Do NOT include \\NVRAM\\ path or .txt extension\\||9
-  Cmn60=||=Example: Name_Changeable\\||I
-  Cmn61=||7-> writes to \\NVRAM\\Name_Changeable.txt\\\\  ===========================
-  Cmn62===========================================\\  TYPICAL TOUCHPANEL||1
-  Cmn63=WORKFLOW\\  =====================================================================
-  Cmn64=\\\\    1. On first install pulse Write_Example to create the file\\
-  Cmn65=||42. File is auto-read on every processor boot\\    3. User taps||1
-  Cmn66=a name button  -> pulse Name_toChange[n]\\    4. Current_Name$ populates||1
-  Cmn67=the text entry field\\    5. Show_Save_FB goes high   -> show save/cancel||1
-  Cmn68=buttons\\    6. User types new name      -> New_Name$ updates\\||1
-  Cmn69=||37. User taps Save           -> pulse Save\\    8. Name is written||1
-  Cmn70=to file, Read_Again pulses to sync modules\\    9. User taps Cancel||1
-  Cmn71=||8-> pulse Cancel to dismiss without saving\\\\  ==========================
-  Cmn72============================================\\  TRACE / DEBUG\\||2
-  Cmn73======================================================================\\
-  Cmn74=\\    Enable SIMPL+ debugger trace to see:\\    - Startup file path||1
-  Cmn75=and mode\\    - File read success or failure\\    - Bytes written||1
-  Cmn76=on each save\\    - Write_Example seed confirmation\\
+  Cmn22=without a number-dash prefix are ignored\\    - [END] does NOT need||1
+  Cmn23=a trailing newline (module handles both cases)\\    - Both Windows||1
+  Cmn24=(CRLF) and Unix (LF) line endings are supported\\\\  ============================
+  Cmn25==========================================\\  SIGNALS\\  =========================
+  Cmn26=============================================\\\\  DIGITAL INPUTS:
+  Cmn27=\\    Read            - Pulse to read file from NVRAM and populate||1
+  Cmn28=outputs\\    Save            - Pulse to save New_Name$ to selected||1
+  Cmn29=slot and\\                      write back to NVRAM\\    Cancel||1
+  Cmn30=||9- Clears selection and hides save UI\\    Write_Example||1
+  Cmn31=||2- Seeds default names and creates the NVRAM file\\||<
+  Cmn32=||:if it does not exist. Use on first install.\\    None||1
+  Cmn33=||;- Clears current selection without saving\\    Name_toChange[n]-
+  Cmn34=||1Pulse index n (1-32) to select that name slot\\||@
+  Cmn35=||6for editing. Outputs current name to Current_Name$\\||6
+  Cmn36=||@and sets Show_Save_FB high.\\\\  STRING INPUT:\\
+  Cmn37=||4New_Name$[25]   - The new name to assign when Save is pulsed\\
+  Cmn38=\\  DIGITAL OUTPUTS:\\    Read_Again      - Pulsed after a save||1
+  Cmn39=to trigger re-read on\\                      connected modules\\
+  Cmn40=||4Show_Save_FB    - High when a name slot is selected and save||1
+  Cmn41=UI\\                      should be visible. Low after save or cancel.
+  Cmn42=\\\\  STRING OUTPUTS:\\    Current_Name$   - The existing name of||1
+  Cmn43=the currently selected slot\\    Status$         - Displays file||1
+  Cmn44=read status and error messages.\\    Name$[1-32]     - All name||1
+  Cmn45=string outputs populated from file\\\\  =========================================
+  Cmn46=============================\\  PARAMETER\\  ====================================
+  Cmn47==================================\\\\    File_Name$      - NVRAM||1
+  Cmn48=filename without path or extension\\                      Default:
+  Cmn49=||1Name_Changeable\\
 [END]
 [BEGIN]
   ObjTp=Symbol

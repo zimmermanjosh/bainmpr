@@ -17,16 +17,16 @@ Comments:
   - If file is missing on startup, Status$ outputs an error message + file format example
   - Added Status$ string output for touchpanel visibility
   - Added full help file
+  - FIXED: remove("[END]\n") changed to remove("[END]") -- file with no trailing newline
+           after [END] caused tempstring$ to come back empty (same fix as DM_AutoFill)
+  - FIXED: remove("[END]\n") in iDM path also updated to remove("[END]")
+  - FIXED: TrimLineEnd STRING_FUNCTION added -- left(len-2) only worked for CRLF files,
+           now handles both Windows (CRLF) and Unix (LF) line endings safely
 */
 
 /*******************************************************************************************
   Compiler Directives
 *******************************************************************************************/
-// #ENABLE_DYNAMIC
-
-// #DIGITAL_EXPAND 
-//#ANALOG_SERIAL_EXPAND InputsWithOutputs
-
 #DEFAULT_VOLATILE
 #ENABLE_STACK_CHECKING
 #ENABLE_TRACE
@@ -78,21 +78,8 @@ Comments:
     - Supports up to 32 names (slots 1-32)
     - Max name length: 25 characters
     - Lines without a number-dash prefix are ignored
-    - To add a new room: add a new numbered line in the file
-      or use the touchpanel UI and pulse Save
-
-  =====================================================================
-  ADDING A NEW ROOM
-  =====================================================================
-
-    1. On the processor, edit \\NVRAM\\Name_Changeable.txt
-    2. Add a new line:  8-New Room Name
-    3. Save the file
-    4. Pulse Read to reload -- new name appears on touchpanel
-    OR
-    1. On the touchpanel, select an empty slot via Name_toChange[n]
-    2. Type the new name into the text entry field (New_Name$)
-    3. Pulse Save -- file is updated and Read_Again pulses to sync
+    - [END] does NOT need a trailing newline (module handles both cases)
+    - Both Windows (CRLF) and Unix (LF) line endings are supported
 
   =====================================================================
   SIGNALS
@@ -122,8 +109,6 @@ Comments:
   STRING OUTPUTS:
     Current_Name$   - The existing name of the currently selected slot
     Status$         - Displays file read status and error messages.
-                      Wire to a touchpanel text field for visibility.
-                      On missing file, outputs file format instructions.
     Name$[1-32]     - All name string outputs populated from file
 
   =====================================================================
@@ -132,33 +117,6 @@ Comments:
 
     File_Name$      - NVRAM filename without path or extension
                       Default: Name_Changeable
-                      Do NOT include \\NVRAM\\ path or .txt extension
-                      Example: Name_Changeable
-                                -> writes to \\NVRAM\\Name_Changeable.txt
-
-  =====================================================================
-  TYPICAL TOUCHPANEL WORKFLOW
-  =====================================================================
-
-    1. On first install pulse Write_Example to create the file
-    2. File is auto-read on every processor boot
-    3. User taps a name button  -> pulse Name_toChange[n]
-    4. Current_Name$ populates the text entry field
-    5. Show_Save_FB goes high   -> show save/cancel buttons
-    6. User types new name      -> New_Name$ updates
-    7. User taps Save           -> pulse Save
-    8. Name is written to file, Read_Again pulses to sync modules
-    9. User taps Cancel         -> pulse Cancel to dismiss without saving
-
-  =====================================================================
-  TRACE / DEBUG
-  =====================================================================
-
-    Enable SIMPL+ debugger trace to see:
-    - Startup file path and mode
-    - File read success or failure
-    - Bytes written on each save
-    - Write_Example seed confirmation
 
 #HELP_END
 
@@ -170,12 +128,9 @@ Comments:
   DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
 *******************************************************************************************/
 DIGITAL_INPUT _skip_, _skip_, Read, Save, Cancel, Write_Example, _skip_, None, Name_toChange[cName];
-// ANALOG_INPUT 
 STRING_INPUT _skip_, New_Name$[25];
-// BUFFER_INPUT 
 
 DIGITAL_OUTPUT _skip_, _skip_, Read_Again, Show_Save_FB; 
-// ANALOG_OUTPUT 
 STRING_OUTPUT  _skip_, Current_Name$, Status$;
 STRING_OUTPUT _skip_, Name$[cName];
 
@@ -183,10 +138,6 @@ STRING_OUTPUT _skip_, Name$[cName];
   Parameters
 *******************************************************************************************/
 STRING_PARAMETER File_Name$[25];
-
-/*******************************************************************************************
-  Parameter Properties
-*******************************************************************************************/
 
 #BEGIN_PARAMETER_PROPERTIES File_Name$
    propValidUnits = unitString;
@@ -214,6 +165,32 @@ STRING sName$[cName][25];
   Functions
 *******************************************************************************************/
 
+// TrimLineEnd: strips the line ending from a string returned by remove("\n", ...)
+// Must be STRING_FUNCTION so the return value can be assigned.
+// Handles both \r\n (Windows CRLF) and \n (Unix LF) files.
+// The old left(len-2) only worked correctly on CRLF files --
+// on LF-only files it would chop the last real character off every name.
+STRING_FUNCTION TrimLineEnd(string sLine$)
+{
+    string sResult$[100];
+    sResult$ = sLine$;
+
+    if(len(sResult$) >= 2)
+    {
+        // if second-to-last char is \r it was a CRLF line -> strip both
+        if(find("\r", sResult$) = (len(sResult$) - 1))
+            sResult$ = left(sResult$, len(sResult$) - 2);
+        else
+            sResult$ = left(sResult$, len(sResult$) - 1);
+    }
+    else
+    {
+        sResult$ = "";
+    }
+
+    return(sResult$);
+}
+
 Function read_Full_string()
 {
 	string temp1$[40], temp2$[40], temp3$[3500];
@@ -235,7 +212,8 @@ Function read_Full_string()
 				{
 		        	temp2$ = remove("-", temp1$);
 					temp2$ = left(temp2$, len(temp2$)-1);
-					temp1$ = left(temp1$, len(temp1$)-2);
+					// FIX: was left(len-2), only correct for CRLF files
+					temp1$ = TrimLineEnd(temp1$);
 					
 					If(atoi(temp2$) < 17)
 					{						
@@ -257,7 +235,8 @@ Function read_Full_string()
 				{
 					temp2$ = remove("-", temp1$);
 					temp2$ = left(temp2$, len(temp2$)-1);
-					temp1$ = left(temp1$, len(temp1$)-2);
+					// FIX: was left(len-2), only correct for CRLF files
+					temp1$ = TrimLineEnd(temp1$);
 					
 					If(atoi(temp2$) < 17)
 					{
@@ -286,7 +265,8 @@ Function read_Full_string()
 			{
 				temp2$ = remove("-", temp1$);
 				temp2$ = left(temp2$, len(temp2$)-1);
-				temp1$ = left(temp1$, len(temp1$)-2);
+				// FIX: was left(len-2), only correct for CRLF files
+				temp1$ = TrimLineEnd(temp1$);
 				
 				Name$[atoi(temp2$)] = temp1$;
 				sName$[atoi(temp2$)] = temp1$;
@@ -312,20 +292,25 @@ Function readfile_go()
   				{
   					prefix$ = remove("[INPUTS]\n", sbuf);  				  				
   					tempstring1$ = remove("[OUTPUTS]\n", sbuf);
-  					tempstring2$ = remove("[END]\n", sbuf);
+  					// FIX: was remove("[END]\n") -- if .txt has no trailing newline
+  					// after [END] the delimiter never matched and tempstring2$ = empty
+  					tempstring2$ = remove("[END]", sbuf);
   					tempEND$ = remove("[END2]\n", sbuf);
   				}
   				Else
   				{
   					prefix$ = remove("[START]\n", sbuf);  				  				
-  					tempstring$ = remove("[END]\n", sbuf);
+  					// FIX: same as above -- drop \n requirement from [END] delimiter
+  					tempstring$ = remove("[END]", sbuf);
+
+					trace("readfile_go: len(prefix$)=%d  len(tempstring$)=%d\n",
+						len(prefix$), len(tempstring$));
   				}
   			}  				
        		FileClose(nFileHandle); 
 		}
 		Else
 		{
-			// File not found -- output instructions to Status$ and trace
 			trace("readfile_go: FILE NOT FOUND -- %s\n", cFileName$);
 			trace("readfile_go: Pulse Write_Example to create the file.\n");
 
@@ -389,8 +374,7 @@ Function Write_file()
         
     startfileoperations();  
 
-    	// _o_creat -- creates file if it does not exist
-     	nfilehandle = fileopen(cfileName$, _o_wronly | _o_text | _o_trunc | _o_creat);
+    	nfilehandle = fileopen(cfileName$, _o_wronly | _o_text | _o_trunc | _o_creat);
 
      	trace("Write_file: handle=%d  path=%s\n", nfilehandle, cfileName$);
      	
@@ -416,15 +400,12 @@ Function Write_file()
 
 push Write_Example
 {
-    // clear any dirty memory before seeding
     setarray(sName$, "");
 
     trace("Write_Example: seeding real system names and writing file\n");
 
     Prefix$ = "[START]\n";
 
-    // -- Real system names from touchpanel --
-    // Left column (room/mic names)
     sName$[1]  = "leftrm";
     sName$[2]  = "mic1";
     sName$[3]  = "mic2";
@@ -432,8 +413,6 @@ push Write_Example
     sName$[5]  = "m4";
     sName$[6]  = "spr";
     sName$[7]  = "right";
-
-    // Center column (input names)
     sName$[8]  = "in1";
     sName$[9]  = "in2";
     sName$[10] = "in3";
@@ -444,8 +423,6 @@ push Write_Example
     sName$[15] = "in8";
     sName$[16] = "in9";
     sName$[17] = "in10";
-
-    // Right column (output names)
     sName$[18] = "out2";
     sName$[19] = "out3";
     sName$[20] = "out5";
@@ -509,7 +486,6 @@ Function Main()
     iDM = 0;
     
     WaitForInitializationComplete();
-    //added time for memory to come on line and intailize fully
     delay(300);
     
     if(File_Name$ = "DM_Inputs") iDM = 1;
@@ -518,6 +494,5 @@ Function Main()
 
     trace("Main: cfileName$ = %s  iDM = %d\n", cfileName$, iDM);
 
-    // auto-read file on startup -- if file missing, Status$ will output instructions
     call readfile_go();
 }
