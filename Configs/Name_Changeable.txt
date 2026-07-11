@@ -1,19 +1,13 @@
 1-Maverick
 2-mic1
 3-mic2
-4-mic3
-5-mic4
 6-Pegasus
 7-mic1
 8-mic2
 9-mic3
 10-mic4 
-11-mic5
-12-mic6
 13-Reunion
 14-mic1
 15-mic2
-16-mic3
-17-mic4
 [END]
 

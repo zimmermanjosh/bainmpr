@@ -3,16 +3,16 @@ Maverick
 Pegasus
 Reunion
 [INPUTS]
-1-Maverick Wallplate 
-2-Maverick FloorBox
+1-Maverick FloorBox 
+2-Maverick Wallplate
 3-codecA 1 Maverick
 4-codecA 2 Maverick
-5-Pegasus Wallplate
-6-Pegasus FloorBox
+5-Pegasus FloorBox
+6-Pegasus Wallplate
 7-codecB 1 Pegasus
 8-codecB 2 Pegasus
-9-Reunion Wallplate 
-10-Reunion FloorBox
+9-Reunion FloorBox 
+10-Reunion Wallplate
 11-codecC 1 Reunion
 12-codecC 2 Reunion
 [OUTPUTS]
@@ -26,5 +26,8 @@ Reunion
 8-Reunion LCD
 9-Reunion LCD
 10-MobileCart
+11-Audio Room A
+12-Audio Room B
+13-Audio Room C
 [END]
 
