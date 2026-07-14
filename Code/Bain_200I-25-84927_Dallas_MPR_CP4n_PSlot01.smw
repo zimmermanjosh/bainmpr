@@ -45,7 +45,8 @@ Cmn4=\\- Copied LA project - \\- Customer insists on exact duplication\\
 Cmn5=- starting point\\jbz\\hello world\\\\20260709\\-Stupid Planr displays||1
 Cmn6=need RCP CEC Control for on and off\\-cec enable on \\-cec standby||1
 Cmn7=on \\- advanvced -. power\\- auto power off\\-power saving off\\
-Cmn8=- power down mode-> fast startup||1
+Cmn8=- power down mode-> fast startup \\\\20260714\\- working through||1
+Cmn9=dsp updates\\
 ]
 [
 ObjTp=Dv
@@ -39369,9 +39370,9 @@ O1=4
 O2=9
 O3=1107
 O4=789
-O5=40
-O6=2270
-O7=2271
+O5=1112
+O6=1114
+O7=1115
 O8=342
 O9=1109
 O10=295
@@ -41786,22 +41787,25 @@ SmVr=1238
 PrH=27
 CF=2
 Cmn1=Biamp \\
-mC=15
-C1=40
-C2=863
-C3=315
-C4=316
-C5=43
-C6=93
-C7=96
-C8=99
-C9=102
-C10=107
-C11=115
-C12=117
-C13=105
-C14=436
-C15=686
+mC=18
+C1=96
+C2=40
+C3=863
+C4=689
+C5=690
+C6=691
+C7=315
+C8=316
+C9=43
+C10=93
+C11=99
+C12=102
+C13=107
+C14=115
+C15=117
+C16=105
+C17=436
+C18=686
 ]
 [
 ObjTp=Sm
@@ -41915,7 +41919,8 @@ ObjVer=1
 SmVr=1238
 PrH=91
 CF=2
-Cmn1=Program - USED FOR LOCAL PRESENATION -- SPKR LEVEL\\
+Cmn1=Program - USED FOR LOCAL PRESENATION -- SPKR LEVEL Checked and Woking||1
+Cmn2=20260714 mainpage\\
 mC=3
 C1=317
 C2=430
@@ -48822,8 +48827,8 @@ I318=388
 I319=389
 I320=396
 I321=391
-I330=1106
-I331=2279
+I330=2279
+I331=1106
 I381=1553
 I382=1554
 I383=1555
@@ -49338,8 +49343,8 @@ O318=388
 O319=389
 O320=390
 O321=391
-O330=411
-O331=1100
+O330=1100
+O331=411
 O332=1105
 O381=1536
 O382=1537
@@ -50714,8 +50719,8 @@ I318=388
 I319=389
 I320=396
 I321=391
-I330=2277
-I331=2278
+I330=2278
+I331=2277
 I381=2069
 I382=2070
 I383=2071
@@ -51230,8 +51235,8 @@ O318=388
 O319=389
 O320=390
 O321=391
-O330=2274
-O331=2275
+O330=2275
+O331=2274
 O332=2276
 O381=2052
 O382=2053
@@ -54201,10 +54206,13 @@ n1I=3
 n1O=2
 Cmn1=wall1\\
 mI=3
+I1=31
+I2=194
 I3=2169
 mO=2
 tO=2
 O1=2171
+O2=2189
 ]
 [
 ObjTp=Sm
@@ -60795,10 +60803,13 @@ n1I=3
 n1O=2
 Cmn1=wall2\\
 mI=3
+I1=1110
+I2=1111
 I3=2170
 mO=2
 tO=2
 O1=2172
+O2=1116
 ]
 [
 ObjTp=Sm
@@ -61117,8 +61128,8 @@ I318=388
 I319=389
 I320=396
 I321=391
-I330=2273
-I331=2280
+I330=2280
+I331=2273
 I381=901
 I382=902
 I383=903
@@ -61634,8 +61645,8 @@ O318=388
 O319=389
 O320=390
 O321=391
-O330=1609
-O331=1610
+O330=1610
+O331=1609
 O332=2272
 O381=893
 O382=894
@@ -65698,8 +65709,8 @@ PropF=1
 Cmn1=Wall-02\\
 mI=7
 I1=1109
-I3=4
-I4=4
+I3=2172
+I4=1116
 I5=2170
 I7=2
 mO=7
@@ -65710,7 +65721,8 @@ O4=1111
 O7=4
 mP=5
 P1=WALL-2
-P2=state
+P2=mute
+Plb2=Mute
 P3=1d
 P4=0d
 P5=2d
@@ -65730,8 +65742,8 @@ PropF=1
 Cmn1=Wall-01\\
 mI=7
 I1=342
-I3=4
-I4=4
+I3=2171
+I4=2189
 I5=2169
 I7=2
 mO=7
@@ -65742,10 +65754,65 @@ O4=194
 O7=4
 mP=5
 P1=WALL-1
-P2=state
+P2=mute
+Plb2=Mute
 P3=1d
 P4=0d
 P5=2d
+]
+[
+ObjTp=Sm
+H=689
+SmC=12
+Nm=Set/Reset Latch
+ObjVer=1
+SmVr=1238
+PrH=91
+CF=2
+n1I=2
+n1O=2
+mI=2
+I1=1112
+I2=4
+mO=2
+tO=2
+O1=40
+]
+[
+ObjTp=Sm
+H=690
+SmC=12
+Nm=Set/Reset Latch
+ObjVer=1
+SmVr=1238
+PrH=91
+CF=2
+n1I=2
+n1O=2
+mI=2
+I1=1114
+I2=4
+mO=2
+tO=2
+O1=2270
+]
+[
+ObjTp=Sm
+H=691
+SmC=12
+Nm=Set/Reset Latch
+ObjVer=1
+SmVr=1238
+PrH=91
+CF=2
+n1I=2
+n1O=2
+mI=2
+I1=1115
+I2=4
+mO=2
+tO=2
+O1=2271
 ]
 [
 ObjTp=Sm
@@ -77128,9 +77195,29 @@ Nm=TP1.Wall.B.Is.Off
 ]
 [
 ObjTp=Sg
+H=1112
+Nm=DSP-01_connect.stpr
+]
+[
+ObjTp=Sg
 H=1113
 Nm=Random_name_room
 SgTp=4
+]
+[
+ObjTp=Sg
+H=1114
+Nm=DSP-02_connect.stpr
+]
+[
+ObjTp=Sg
+H=1115
+Nm=DSP-03_connect.stpr
+]
+[
+ObjTp=Sg
+H=1116
+Nm=TP1.Wall.B_tog.off
 ]
 [
 ObjTp=Sg
@@ -82553,6 +82640,11 @@ Nm=[Occupancy]=A+B|A+B+C.Display.or
 ObjTp=Sg
 H=2188
 Nm=[Occupancy]=B+C|A+B+C.Display.or
+]
+[
+ObjTp=Sg
+H=2189
+Nm=TP1.Wall.A_Tog.off
 ]
 [
 ObjTp=Sg
