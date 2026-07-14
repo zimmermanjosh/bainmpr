@@ -1,13 +1,13 @@
 1-Maverick
-2-mic1
-3-mic2
-6-Pegasus
-7-mic1
-8-mic2
-9-mic3
-10-mic4 
+2-Maverick Mic1
+3-Maverick Mic2
+4-Pegasus
+5-Pegasus Mic1
+6-Pegasus Mic2
+7-Pegasus Mic3
+8-Pegasus Mic4 
 13-Reunion
-14-mic1
-15-mic2
+14-Reunion Mic1
+15-Reunion Mic2
 [END]
 
